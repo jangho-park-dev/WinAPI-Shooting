@@ -5,12 +5,13 @@
 #include "Bullet.h"
 #include "BoxCollider.h"
 
-enum EnemyType
+enum class EnemyType
 {
+	NONE,
 	MONSTER,
 	MOTHERSHIP,
 	DRAGON,
-	GOONS
+	GOONS,
 };
 
 class Enemy : public GameObject
@@ -20,7 +21,7 @@ private:
 	EnemyType m_enemyType;
 
 public:
-	Enemy(float x = 0.f, float y = 0.f, float speed = 0.f, EnemyType type = EnemyType::GOONS);
+	Enemy(float x = 0.f, float y = 0.f, float speed = 0.f, EnemyType type = EnemyType::NONE);
 	~Enemy() {};
 
 	void Update(RECT& client, float deltaTime) override;

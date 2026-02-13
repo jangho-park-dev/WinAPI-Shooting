@@ -5,7 +5,7 @@
 #include "Bullet.h"
 #include "BoxCollider.h"
 
-enum Keystates
+enum class Keystates
 {
 	LEFT,
 	RIGHT,
@@ -13,7 +13,7 @@ enum Keystates
 	DOWN
 };
 
-enum TrailOrder
+enum class TrailOrder
 {
 	TL, // 좌상
 	TR, // 우상
@@ -58,6 +58,6 @@ public:
 	void SetDirection(Keystates key, bool tf);
 
 	// trail 스프라이트 시트의 srcX, srcY 좌표 반환
-	int GetSrcX(TrailOrder o) const { return (o == TR || o == BR) ? 16 : 0; }
-	int GetSrcY(TrailOrder o) const { return (o == BL || o == BR) ? 16 : 0; }
+	int GetSrcX(TrailOrder o) const { return (o == TrailOrder::TR || o == TrailOrder::BR) ? 16 : 0; }
+	int GetSrcY(TrailOrder o) const { return (o == TrailOrder::BL || o == TrailOrder::BR) ? 16 : 0; }
 };

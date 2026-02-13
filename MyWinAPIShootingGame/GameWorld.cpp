@@ -88,10 +88,10 @@ void GameWorld::RemoveInactiveObjects()
 
 void GameWorld::HandleInput(float deltaTime)
 {
-	m_player->SetDirection(LEFT, GetAsyncKeyState(VK_LEFT) & 0x8000);
-	m_player->SetDirection(RIGHT, GetAsyncKeyState(VK_RIGHT) & 0x8000);
-	m_player->SetDirection(UP, GetAsyncKeyState(VK_UP) & 0x8000);
-	m_player->SetDirection(DOWN, GetAsyncKeyState(VK_DOWN) & 0x8000);
+	m_player->SetDirection(Keystates::LEFT, GetAsyncKeyState(VK_LEFT) & 0x8000);
+	m_player->SetDirection(Keystates::RIGHT, GetAsyncKeyState(VK_RIGHT) & 0x8000);
+	m_player->SetDirection(Keystates::UP, GetAsyncKeyState(VK_UP) & 0x8000);
+	m_player->SetDirection(Keystates::DOWN, GetAsyncKeyState(VK_DOWN) & 0x8000);
 
 	HandleFire(deltaTime);
 }

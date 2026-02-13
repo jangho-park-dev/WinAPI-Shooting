@@ -3,7 +3,7 @@
 
 class Collider;
 
-enum GameObjectType
+enum class GameObjectType
 {
 	NONE, 
 	BACKGROUND,
@@ -13,7 +13,7 @@ enum GameObjectType
 	BULLET
 };
 
-enum GameObjectLayer
+enum class GameObjectLayer
 {
 	NONE_LAYER,
 	BACKGROUND_LAYER,

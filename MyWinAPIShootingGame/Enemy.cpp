@@ -16,6 +16,7 @@ Enemy::Enemy(float x, float y, float speed, EnemyType type)
 	SetCollider(new BoxCollider(this));
 }
 
+
 void Enemy::SetSprite()
 {
 	switch (m_enemyType)

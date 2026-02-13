@@ -2,7 +2,7 @@
 #include "framework.h"
 #include "Sprite.h"
 
-enum SpriteID
+enum class SpriteID
 {
 	SPRITE_BACKGROUND,
 	SPRITE_PLAYER,
