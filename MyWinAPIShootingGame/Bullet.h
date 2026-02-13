@@ -4,7 +4,7 @@
 #include "ResourceManager.h"
 #include "BoxCollider.h"
 
-enum BulletType
+enum class BulletType
 {
 	PLAYERBULLET,
 	MONSTERBULLET,
@@ -18,6 +18,7 @@ private:
 	Sprite* m_bulletSprite;
 	BulletType m_bulletType;
 	int m_nSrcX, m_nSrcY;
+	float m_fDirY;
 	
 public:
 	Bullet(float x = 0.f, float y = 0.f, float speed = 500.f, BulletType bulletType = BulletType::PLAYERBULLET);

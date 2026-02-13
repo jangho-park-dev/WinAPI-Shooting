@@ -19,11 +19,13 @@ void GameWorld::Initialize()
 	m_player = new Player();
 	m_objects.push_back(new Background());
 	m_objects.push_back(m_player);
+
+	m_objects.push_back(new Enemy(100.f, -100.f, 200.f, EnemyType::MONSTER, this));
 }
 
 void GameWorld::AddObject(GameObject* object)
 {
-	m_objects.push_back(object);
+	m_spawnQueue.push(object);
 }
 
 void GameWorld::Update(RECT& client, float deltaTime)
@@ -36,10 +38,13 @@ void GameWorld::Update(RECT& client, float deltaTime)
 
 	CheckCollisions();
 	RemoveInactiveObjects();
+	ProcessSpawnQueue();
 }
 
 void GameWorld::Render(Renderer& renderer)
 {
+	ObjectsSortByLayer();
+
 	for (auto obj : m_objects)
 	{
 		if (obj->IsActive())
@@ -71,18 +76,42 @@ void GameWorld::CheckCollisions()
 	}
 }
 
+void GameWorld::ObjectsSortByLayer()
+{
+	std::sort(m_objects.begin(), m_objects.end(),
+		[](GameObject* alpha, GameObject* beta)
+		{
+			return alpha->GetLayer() < beta->GetLayer();
+		}
+	);
+}
+
 void GameWorld::RemoveInactiveObjects()
 {
-	auto it = m_objects.begin();
-	while (it != m_objects.end())
-	{
-		if (!(*it)->IsActive())
+	auto it = std::remove_if(
+		m_objects.begin(),
+		m_objects.end(),
+		[](GameObject* obj)
 		{
-			delete* it;
-			it = m_objects.erase(it);
+			if (!obj->IsActive())
+			{
+				delete obj;
+				obj = nullptr;
+				return true;   // 제거 대상
+			}
+			return false;
 		}
-		else
-			++it;
+	);
+
+	m_objects.erase(it, m_objects.end());
+}
+
+void GameWorld::ProcessSpawnQueue()
+{
+	while (!m_spawnQueue.empty())
+	{
+		m_objects.push_back(m_spawnQueue.front());
+		m_spawnQueue.pop();
 	}
 }
 
@@ -115,4 +144,3 @@ void GameWorld::HandleFire(float deltaTime)
 		fireTimer = 0.f;
 	}
 }
-

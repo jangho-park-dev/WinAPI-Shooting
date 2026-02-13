@@ -62,6 +62,8 @@ void Player::Move(RECT& client, float deltaTime)
 	if (GetY() < 0.f)	SetY(0.f);
 	if (GetX() + GetWidth() > client.right)		SetX(static_cast<float>(client.right - m_playerSprite->GetWidth()));
 	if (GetY() + GetHeight() > client.bottom)	SetY(static_cast<float>(client.bottom - m_playerSprite->GetHeight()));
+
+	//std::cout << "Player(x, y) : (" << GetX() << ", " << GetY() << ")" << std::endl;
 }
 
 void Player::UpdateTrails(float deltaTime)

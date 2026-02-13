@@ -16,49 +16,39 @@ Bullet::Bullet(float x, float y, float speed, BulletType bulletType)
 	//SetDamage(10);
 	SetCollider(new BoxCollider(this));
 
+	m_nSrcX = 0;
+	m_nSrcY = 0;
 
 	switch (m_bulletType)
 	{
-	case BulletType::PLAYERBULLET:
-		m_nSrcX = 0;
-		m_nSrcY = 32;
-		break;
-	case BulletType::MONSTERBULLET:
-		m_nSrcX = 0;
-		m_nSrcY = 8;
-		break;
-	case BulletType::MOTHERSHIPBULLET:
-		m_nSrcX = 0;
-		m_nSrcY = 16;
-		break;
-	case BulletType::DRAGONBULLET:
-		m_nSrcX = 0;
-		m_nSrcY = 24;
-		break;
+	case BulletType::PLAYERBULLET:		m_nSrcY = 32;	break;
+	case BulletType::MONSTERBULLET:		m_nSrcY = 8;	break;
+	case BulletType::MOTHERSHIPBULLET:	m_nSrcY = 16;	break;
+	case BulletType::DRAGONBULLET:		m_nSrcY = 24;	break;
 	}
 }
 
 void Bullet::Update(RECT& client, float deltaTime)
 {
 	if (!IsActive())	return;
+
+	float nDir = 1.f;
+	if (m_bulletType == BulletType::PLAYERBULLET)	nDir *= -1;
 	
-	float move = 0.f;
 	// 총알 이동
+	SetY(GetY() + GetSpeed() * deltaTime * nDir);
+	if (GetY() + GetHeight() < 0 || GetY() > client.bottom)
+		SetActive(false);
+
+	std::cout << "Bullet y : " << GetY() << std::endl;
 	switch (m_bulletType)
 	{
 	case BulletType::PLAYERBULLET:
-		move = GetSpeed() * deltaTime;
-		SetY(GetY() - move);
 
-		// 화면 밖으로 나가면 비활성화
-		if (GetY() + GetHeight() < 0)	SetActive(false);
 		break;
 
 	case BulletType::MONSTERBULLET:
-		move = GetSpeed() * deltaTime;
-		SetY(GetY() + move);
 
-		if (GetY() + GetHeight() > client.bottom)	SetActive(false);
 		break;
 	}
 }
