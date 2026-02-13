@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="소스 파일\Components">
+      <UniqueIdentifier>{1df07a36-1498-4819-8ab6-6a7a75de5262}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Frameworks">
+      <UniqueIdentifier>{8e673f31-17bc-4fe6-9716-3c92e8d66718}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Mains">
+      <UniqueIdentifier>{918515f5-6987-48f4-8371-208a768054a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Objects">
+      <UniqueIdentifier>{33730206-4e62-4c72-a1c7-73ba4c824cc3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="BoxCollider.cpp">
+      <Filter>소스 파일\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Collider.cpp">
+      <Filter>소스 파일\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>소스 파일\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite.cpp">
+      <Filter>소스 파일\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>소스 파일\Frameworks</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>소스 파일\Frameworks</Filter>
+    </ClCompile>
+    <ClCompile Include="GameMain.cpp">
+      <Filter>소스 파일\Mains</Filter>
+    </ClCompile>
+    <ClCompile Include="GameWorld.cpp">
+      <Filter>소스 파일\Mains</Filter>
+    </ClCompile>
+    <ClCompile Include="WinMain.cpp">
+      <Filter>소스 파일\Mains</Filter>
+    </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>소스 파일\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>소스 파일\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>소스 파일\Objects</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BoxCollider.h">
+      <Filter>소스 파일\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Collider.h">
+      <Filter>소스 파일\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>소스 파일\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>소스 파일\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>소스 파일\Frameworks</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>소스 파일\Frameworks</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>소스 파일\Frameworks</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>소스 파일\Frameworks</Filter>
+    </ClInclude>
+    <ClInclude Include="GameMain.h">
+      <Filter>소스 파일\Mains</Filter>
+    </ClInclude>
+    <ClInclude Include="GameWorld.h">
+      <Filter>소스 파일\Mains</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>소스 파일\Mains</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>소스 파일\Mains</Filter>
+    </ClInclude>
+    <ClInclude Include="Background.h">
+      <Filter>소스 파일\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Bullet.h">
+      <Filter>소스 파일\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>소스 파일\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>소스 파일\Objects</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

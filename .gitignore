@@ -1,0 +1,40 @@
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+Debug/
+Release/
+x64/
+x86/
+build/
+
+# C++ intermediate files
+*.obj
+*.pdb
+*.ilk
+*.idb
+*.pch
+*.ipch
+*.iobj
+*.ipdb
+
+# Executables
+*.exe
+*.dll
+
+# Logs
+*.log
+
+# Windows
+Thumbs.db
+.DS_Store
+
+# WinAPI resource temp
+*.aps
+
+# DirectX / Graphics temp (있으면)
+*.hlsl~
