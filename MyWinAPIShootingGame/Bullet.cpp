@@ -40,7 +40,6 @@ void Bullet::Update(RECT& client, float deltaTime)
 	if (GetY() + GetHeight() < 0 || GetY() > client.bottom)
 		SetActive(false);
 
-	std::cout << "Bullet y : " << GetY() << std::endl;
 	switch (m_bulletType)
 	{
 	case BulletType::PLAYERBULLET:
