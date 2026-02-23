@@ -76,33 +76,14 @@ void Enemy::Update(RECT& client, float deltaTime)
 {
 	if (!IsActive())	return;
 
-	//std::cout << GetY() << std::endl;
-
 	switch (m_state)
 	{
-	case EnemyState::SPAWN:
-		SetY(GetY() + GetSpeed() * deltaTime);
-
-		if (GetY() >= m_fTargetY)
-		{
-			SetY(m_fTargetY);
-			m_state = EnemyState::ATTACK;
-			m_fFireTimer = 0.f;
-		}
-		break;
-
-	case EnemyState::ATTACK:
-		m_fFireTimer += deltaTime;
-
-		if (m_fFireTimer >= m_fFireInterval)
-		{
-			Fire();
-			m_fFireTimer = 0.f;
-		}
-		break;
+	case EnemyState::SPAWN:		EnemySpawnProcess(deltaTime);		break;
+	case EnemyState::ATTACK:		EnemyAttackProcess(deltaTime);		break;
 	}
 
 }
+
 
 void Enemy::Render(Renderer& renderer)
 {
@@ -121,9 +102,56 @@ void Enemy::OnCollision(GameObject& other)
 {
 	if (!IsActive())	return;
 
+
 }
 
-void Enemy::Fire()
+
+void Enemy::EnemySpawnProcess(float deltaTime)
+{
+	switch (m_enemyType)
+	{
+	case EnemyType::MONSTER:		MonsterSpawn(deltaTime);		break;
+	case EnemyType::GOONS:			GoonsSpawn(deltaTime);		break;
+	case EnemyType::MOTHERSHIP:	MothershipSpawn(deltaTime);	break;
+	case EnemyType::DRAGON:		DragonSpawn(deltaTime);		break;
+	}
+}
+
+void Enemy::EnemyAttackProcess(float deltaTime)
+{
+	switch (m_enemyType)
+	{
+	case EnemyType::MONSTER:		MonsterAttack(deltaTime);		break;
+	case EnemyType::GOONS:			GoonsAttack(deltaTime);			break;
+	case EnemyType::MOTHERSHIP:	MothershipAttack(deltaTime);	break;
+	case EnemyType::DRAGON:		DragonAttack(deltaTime);		break;
+	}
+}
+
+void Enemy::MonsterSpawn(float deltaTime)
+{
+	SetY(GetY() + GetSpeed() * deltaTime);
+
+	if (GetY() >= m_fTargetY)
+	{
+		SetY(m_fTargetY);
+		m_state = EnemyState::ATTACK;
+		m_fFireTimer = 0.f;
+	}
+}
+
+void Enemy::MonsterAttack(float deltaTime)
+{
+	m_fFireTimer += deltaTime;
+
+	if (m_fFireTimer >= m_fFireInterval)
+	{
+		MonsterFire();
+		m_fFireTimer = 0.f;
+	}
+}
+
+void Enemy::MonsterFire()
 {
 	float fLeftGunX = GetX() + 10.f;
 	float fRightGunX = GetX() + GetWidth() - 10.f;
@@ -138,4 +166,50 @@ void Enemy::Fire()
 	m_gameWorld->AddObject(leftBullet);
 	m_gameWorld->AddObject(rightBullet);
 }
+
+void Enemy::GoonsSpawn(float deltaTime)
+{
+
+}
+
+void Enemy::GoonsAttack(float deltaTime)
+{
+
+}
+
+void Enemy::GoonsFire()
+{
+
+}
+
+void Enemy::MothershipSpawn(float deltaTime)
+{
+
+}
+
+void Enemy::MothershipAttack(float deltaTime)
+{
+
+}
+
+void Enemy::MothershipFire()
+{
+
+}
+
+void Enemy::DragonSpawn(float deltaTime)
+{
+
+}
+
+void Enemy::DragonAttack(float deltaTime)
+{
+
+}
+
+void Enemy::DragonFire()
+{
+
+}
+
 

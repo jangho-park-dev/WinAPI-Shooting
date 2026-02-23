@@ -18,7 +18,7 @@ private:
 	Sprite* m_bulletSprite;
 	BulletType m_bulletType;
 	int m_nSrcX, m_nSrcY;
-	float m_fDirY;
+	float m_fDirection;
 	
 public:
 	Bullet(float x = 0.f, float y = 0.f, float speed = 500.f, BulletType bulletType = BulletType::PLAYERBULLET);

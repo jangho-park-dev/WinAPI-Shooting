@@ -46,12 +46,26 @@ public:
 	~Enemy() {};
 
 	void Update(RECT& client, float deltaTime) override;
+	void EnemyAttackProcess(float deltaTime);
+	void EnemySpawnProcess(float deltaTime);
 	void Render(Renderer& renderer) override;
 	void OnCollision(GameObject& other) override;
 
 	void SetSprite();
 	void SetWH();
+	void SetState(EnemyState state) { m_state = state; }
 
-	void Fire();
+	void MonsterAttack(float deltaTime);
+	void MonsterSpawn(float deltaTime);
+	void MonsterFire();
+	void GoonsAttack(float deltaTime);
+	void GoonsSpawn(float deltaTime);
+	void GoonsFire();
+	void MothershipSpawn(float deltaTime);
+	void MothershipAttack(float deltaTime);
+	void MothershipFire();
+	void DragonAttack(float deltaTime);
+	void DragonSpawn(float deltaTime);
+	void DragonFire();
 };
 

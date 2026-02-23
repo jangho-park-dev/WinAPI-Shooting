@@ -130,9 +130,9 @@ void Player::OnCollision(GameObject& other)
 
 void Player::SetDirection(Keystates key, bool tf)
 {
-	if		(key == Keystates::LEFT)	m_bLeft = tf;
+	if		(key == Keystates::LEFT)		m_bLeft = tf;
 	else if (key == Keystates::RIGHT)	m_bRight = tf;
-	else if (key == Keystates::UP)		m_bUp = tf;
+	else if (key == Keystates::UP)			m_bUp = tf;
 	else if (key == Keystates::DOWN)	m_bDown = tf;
 }
 

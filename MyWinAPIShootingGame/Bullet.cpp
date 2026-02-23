@@ -18,10 +18,11 @@ Bullet::Bullet(float x, float y, float speed, BulletType bulletType)
 
 	m_nSrcX = 0;
 	m_nSrcY = 0;
+	m_fDirection = 1.f;
 
 	switch (m_bulletType)
 	{
-	case BulletType::PLAYERBULLET:		m_nSrcY = 32;	break;
+	case BulletType::PLAYERBULLET:			m_nSrcY = 32;	m_fDirection = -1.f;	break;
 	case BulletType::MONSTERBULLET:		m_nSrcY = 8;	break;
 	case BulletType::MOTHERSHIPBULLET:	m_nSrcY = 16;	break;
 	case BulletType::DRAGONBULLET:		m_nSrcY = 24;	break;
@@ -31,24 +32,25 @@ Bullet::Bullet(float x, float y, float speed, BulletType bulletType)
 void Bullet::Update(RECT& client, float deltaTime)
 {
 	if (!IsActive())	return;
-
-	float nDir = 1.f;
-	if (m_bulletType == BulletType::PLAYERBULLET)	nDir *= -1;
 	
 	// ÃÑ¾Ë ÀÌµ¿
-	SetY(GetY() + GetSpeed() * deltaTime * nDir);
+	SetY(GetY() + GetSpeed() * deltaTime * m_fDirection);
 	if (GetY() + GetHeight() < 0 || GetY() > client.bottom)
 		SetActive(false);
 
 	switch (m_bulletType)
 	{
 	case BulletType::PLAYERBULLET:
+	{
 
-		break;
+	}
+	break;
 
 	case BulletType::MONSTERBULLET:
+	{
 
-		break;
+	}
+	break;
 	}
 }
 
@@ -70,9 +72,19 @@ void Bullet::Render(Renderer& renderer)
 void Bullet::OnCollision(GameObject& other)
 {
 	if (!IsActive())	return;
-	if (other.GetLayer() != GameObjectLayer::ENEMY_LAYER)		return;
-	
+	if (other.GetType() == GameObjectType::BULLET)	return;
+
 	SetActive(false);
+
 	other.SetHealth(other.GetHealth() - GetDamage());
+
+	if (other.GetHealth() <= 0)
+	{
+		other.SetHealth(0);
+		other.SetActive(false);
+	}
+
+	std::cout << "Bullet collided with type_num " << static_cast<int>(other.GetType()) 
+		<< ", other health: " << other.GetHealth() << std::endl;
 }
 

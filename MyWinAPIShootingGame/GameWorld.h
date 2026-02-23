@@ -30,5 +30,8 @@ public:
 	void CheckCollisions();
 	void HandleInput(float deltaTime);
 	void HandleFire(float deltaTime);
+
+	bool KeyDown(int keyCode);
+	bool KeyUp(int keyCode);
 };
 

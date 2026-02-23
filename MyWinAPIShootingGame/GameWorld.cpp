@@ -20,6 +20,7 @@ void GameWorld::Initialize()
 	m_objects.push_back(new Background());
 	m_objects.push_back(m_player);
 
+	// 임시 몬스터 추가.
 	m_objects.push_back(new Enemy(100.f, -100.f, 200.f, EnemyType::MONSTER, this));
 }
 
@@ -117,12 +118,26 @@ void GameWorld::ProcessSpawnQueue()
 
 void GameWorld::HandleInput(float deltaTime)
 {
-	m_player->SetDirection(Keystates::LEFT, GetAsyncKeyState(VK_LEFT) & 0x8000);
-	m_player->SetDirection(Keystates::RIGHT, GetAsyncKeyState(VK_RIGHT) & 0x8000);
-	m_player->SetDirection(Keystates::UP, GetAsyncKeyState(VK_UP) & 0x8000);
-	m_player->SetDirection(Keystates::DOWN, GetAsyncKeyState(VK_DOWN) & 0x8000);
+	m_player->SetDirection(Keystates::LEFT, KeyDown(VK_LEFT));
+	m_player->SetDirection(Keystates::RIGHT, KeyDown(VK_RIGHT));
+	m_player->SetDirection(Keystates::UP, KeyDown(VK_UP));
+	m_player->SetDirection(Keystates::DOWN, KeyDown(VK_DOWN));
 
 	HandleFire(deltaTime);
+
+	// S키를 누르면 이동 속도가 절반으로 감소, 떼면 원래대로
+	if (KeyDown(0x53))	m_player->SetSpeed(150.f);
+	if (KeyUp(0x53))		m_player->SetSpeed(300.f);
+}
+
+bool GameWorld::KeyDown(int keyCode)
+{
+	return GetAsyncKeyState(keyCode) & 0x8000 ? 1 : 0;
+}
+
+bool GameWorld::KeyUp(int keyCode)
+{
+	return GetAsyncKeyState(keyCode) & 0x8000 ? 0 : 1;
 }
 
 void GameWorld::HandleFire(float deltaTime)
@@ -130,7 +145,7 @@ void GameWorld::HandleFire(float deltaTime)
 	static float fireTimer = 0.f;
 	fireTimer += deltaTime;
 
-	if ((GetAsyncKeyState(0x41) & 0x8000) && fireTimer > 0.1f)
+	if (KeyDown(0x41) && fireTimer > 0.1f)
 	{
 		Bullet* bullet = new Bullet(
 			m_player->GetX() + m_player->GetWidth() / 2 - 4,
