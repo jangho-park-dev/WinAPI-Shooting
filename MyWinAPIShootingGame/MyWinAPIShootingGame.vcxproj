@@ -125,6 +125,7 @@
   <ItemGroup>
     <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="Bullet.cpp" />
+    <ClCompile Include="BulletPattern.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="GameMain.cpp" />
@@ -140,6 +141,7 @@
     <ClInclude Include="Background.h" />
     <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="Bullet.h" />
+    <ClInclude Include="BulletPattern.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="framework.h" />

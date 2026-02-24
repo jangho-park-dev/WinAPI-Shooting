@@ -125,7 +125,7 @@ void Player::Render(Renderer& renderer)
 
 void Player::OnCollision(GameObject& other)
 {
-	// 일단 구현 없음
+	// TODO : 피격 사운드
 }
 
 void Player::SetDirection(Keystates key, bool tf)

@@ -1,11 +1,11 @@
 #pragma once
 #include "GameObject.h"
-#include "Player.h"
-#include "Enemy.h"
 #include <queue>
 
 class Renderer;
 class ResourceManager;
+class Player;
+class Enemy;
 
 class GameWorld
 {
@@ -33,5 +33,7 @@ public:
 
 	bool KeyDown(int keyCode);
 	bool KeyUp(int keyCode);
+
+	Player* GetPlayer() const { return m_player; }
 };
 

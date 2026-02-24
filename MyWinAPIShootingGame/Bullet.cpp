@@ -1,6 +1,7 @@
 #include "Bullet.h"
+#include <cmath>
 
-Bullet::Bullet(float x, float y, float speed, BulletType bulletType)
+Bullet::Bullet(float x, float y, float speed, int damage, BulletType bulletType)
 	: m_bulletType(bulletType)
 {
 	m_bulletSprite = ResourceManager::GetInstance().GetSprite(SpriteID::SPRITE_BULLET);
@@ -12,17 +13,19 @@ Bullet::Bullet(float x, float y, float speed, BulletType bulletType)
 	SetSpeed(speed);
 	SetWidth(8);
 	SetHeight(8);
-	//SetHealth(1);
-	//SetDamage(10);
+	SetHealth(1);
+	SetDamage(damage);
 	SetCollider(new BoxCollider(this));
 
 	m_nSrcX = 0;
 	m_nSrcY = 0;
-	m_fDirection = 1.f;
+	
+	m_fDirX = 0.f;
+	m_fDirY = 0.f;
 
 	switch (m_bulletType)
 	{
-	case BulletType::PLAYERBULLET:			m_nSrcY = 32;	m_fDirection = -1.f;	break;
+	case BulletType::PLAYERBULLET:			m_nSrcY = 32;	m_fDirY = -1.f;	break;
 	case BulletType::MONSTERBULLET:		m_nSrcY = 8;	break;
 	case BulletType::MOTHERSHIPBULLET:	m_nSrcY = 16;	break;
 	case BulletType::DRAGONBULLET:		m_nSrcY = 24;	break;
@@ -34,24 +37,11 @@ void Bullet::Update(RECT& client, float deltaTime)
 	if (!IsActive())	return;
 	
 	// ÃÑ¾Ë ÀÌµ¿
-	SetY(GetY() + GetSpeed() * deltaTime * m_fDirection);
-	if (GetY() + GetHeight() < 0 || GetY() > client.bottom)
+	SetX(GetX() + GetSpeed() * deltaTime * m_fDirX);
+	SetY(GetY() + GetSpeed() * deltaTime * m_fDirY);
+	if (GetY() + GetHeight() < 0 || GetY() > client.bottom ||
+		GetX() + GetWidth() < 0 || GetX() > client.right)
 		SetActive(false);
-
-	switch (m_bulletType)
-	{
-	case BulletType::PLAYERBULLET:
-	{
-
-	}
-	break;
-
-	case BulletType::MONSTERBULLET:
-	{
-
-	}
-	break;
-	}
 }
 
 void Bullet::Render(Renderer& renderer)
@@ -64,7 +54,7 @@ void Bullet::Render(Renderer& renderer)
 	renderer.DrawSprite(
 		*m_bulletSprite, 
 		drawX, drawY,
-		m_nSrcX, m_nSrcY,					
+		m_nSrcX, m_nSrcY,
 		GetWidth(), GetHeight()
 	);
 }
@@ -72,19 +62,25 @@ void Bullet::Render(Renderer& renderer)
 void Bullet::OnCollision(GameObject& other)
 {
 	if (!IsActive())	return;
-	if (other.GetType() == GameObjectType::BULLET)	return;
-
-	SetActive(false);
+	
+	if (m_bulletType == BulletType::PLAYERBULLET && other.GetType() == GameObjectType::PLAYER) return;
+	if (m_bulletType != BulletType::PLAYERBULLET && other.GetType() == GameObjectType::ENEMY) return;
 
 	other.SetHealth(other.GetHealth() - GetDamage());
-
 	if (other.GetHealth() <= 0)
 	{
 		other.SetHealth(0);
 		other.SetActive(false);
 	}
+	std::cout << "Bullet hit type_num " << static_cast<int>(other.GetType())
+		<< ",\tother hp : " << other.GetHealth() << std::endl;
 
-	std::cout << "Bullet collided with type_num " << static_cast<int>(other.GetType()) 
-		<< ", other health: " << other.GetHealth() << std::endl;
+	SetActive(false);
 }
 
+void Bullet::SetDirection(float angle)
+{
+	float rad = angle * 3.14159f / 180.f;
+	m_fDirX = cosf(rad);
+	m_fDirY = sinf(rad);
+}

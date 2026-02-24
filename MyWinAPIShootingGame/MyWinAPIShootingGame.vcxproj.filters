@@ -59,6 +59,9 @@
     <ClCompile Include="Player.cpp">
       <Filter>소스 파일\Objects</Filter>
     </ClCompile>
+    <ClCompile Include="BulletPattern.cpp">
+      <Filter>소스 파일\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoxCollider.h">
@@ -108,6 +111,9 @@
     </ClInclude>
     <ClInclude Include="Player.h">
       <Filter>소스 파일\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="BulletPattern.h">
+      <Filter>소스 파일\Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

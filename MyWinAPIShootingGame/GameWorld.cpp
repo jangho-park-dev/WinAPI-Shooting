@@ -1,4 +1,6 @@
 #include "GameWorld.h"
+#include "Player.h"
+#include "Enemy.h"
 #include "Collider.h"
 #include "Background.h"
 
@@ -55,6 +57,14 @@ void GameWorld::Render(Renderer& renderer)
 
 void GameWorld::CheckCollisions()
 {
+	// 유효한 충돌 쌍 정의 (플레이어-적, 플레이어-총알, 적-총알)
+	static const std::pair<GameObjectType, GameObjectType> collisionPairs[] =
+	{
+		{ GameObjectType::PLAYER, GameObjectType::ENEMY },
+		{ GameObjectType::PLAYER, GameObjectType::BULLET },
+		{ GameObjectType::ENEMY, GameObjectType::BULLET }
+	};
+
 	for (size_t i = 0; i < m_objects.size(); ++i)
 	{
 		for (size_t j = i + 1; j < m_objects.size(); ++j)
@@ -62,11 +72,22 @@ void GameWorld::CheckCollisions()
 			GameObject* a = m_objects[i];
 			GameObject* b = m_objects[j];
 
-			if (!a->IsActive() || !b->IsActive())
-				continue;
+			if (!a->IsActive() || !b->IsActive())			continue;
+			if (!a->GetCollider() || !b->GetCollider())	continue;
 
-			if (!a->GetCollider() || !b->GetCollider())
-				continue;
+			bool validPair = false;
+
+			for (auto& pair : collisionPairs)
+			{
+				if ((a->GetType() == pair.first && b->GetType() == pair.second) ||
+					(a->GetType() == pair.second && b->GetType() == pair.first))
+				{
+					validPair = true;
+					break;
+				}
+			}
+
+			if (!validPair)	continue;
 
 			if (a->GetCollider()->CheckCollision(*b->GetCollider()))
 			{
@@ -144,6 +165,7 @@ void GameWorld::HandleFire(float deltaTime)
 {
 	static float fireTimer = 0.f;
 	fireTimer += deltaTime;
+	int damage = m_player->GetDamage();
 
 	if (KeyDown(0x41) && fireTimer > 0.1f)
 	{
@@ -151,6 +173,7 @@ void GameWorld::HandleFire(float deltaTime)
 			m_player->GetX() + m_player->GetWidth() / 2 - 4,
 			m_player->GetY() - 18,
 			600.f,
+			damage,
 			BulletType::PLAYERBULLET
 		);
 		bullet->SetDamage(m_player->GetDamage());

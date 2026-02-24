@@ -4,6 +4,7 @@
 #include "Renderer.h"
 #include "Bullet.h"
 #include "BoxCollider.h"
+#include "BulletPattern.h"
 
 class GameWorld;
 
@@ -30,9 +31,15 @@ private:
 	EnemyType m_enemyType;
 	EnemyState m_state;
 
-	float m_fTargetY;
-	float m_fFireTimer;
-	float m_fFireInterval;
+	float m_fSpawnTargetY;	// 지정된 Y 좌표 (스폰 위치에서 멈추는 지점)
+	
+	int m_nBurstCount;		// 현재까지 쏜 횟수
+	int m_nBurstMax;			// 버스트당 발사 횟수
+	float m_fBurstTimer;		// 발사 간격 타이머
+	float m_fBurstInterval;	// 발사 간격
+	float m_fRestTimer;		// 휴식 타이머
+	float m_fRestInterval;		// 휴식 시간
+	bool m_bResting;			// 휴식 중 여부
 
 	GameWorld* m_gameWorld;
 

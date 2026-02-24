@@ -1,13 +1,12 @@
 #include "Enemy.h"
 #include "GameWorld.h"
+#include "Player.h"
 
 Enemy::Enemy(float x, float y, float speed, EnemyType type, GameWorld* gameWorld)
 	: m_gameWorld(gameWorld)
 	, m_enemyType(type)
 	, m_state(EnemyState::SPAWN)
-	, m_fTargetY(0.f)
-	, m_fFireTimer(0.f)
-	, m_fFireInterval(0.f)
+	, m_fSpawnTargetY(0.f)
 {
 	SetSprite();
 	SetType(GameObjectType::ENEMY);
@@ -24,8 +23,14 @@ Enemy::Enemy(float x, float y, float speed, EnemyType type, GameWorld* gameWorld
 
 	if (m_enemyType == EnemyType::MONSTER)
 	{
-		m_fTargetY = 100.f;
-		m_fFireInterval = 1.5f;
+		// 0.15초 간격으로 발사, 3발 발사 후 1.5초 휴식
+		m_nBurstCount = 0;
+		m_nBurstMax = 3;
+		m_fBurstTimer = 0.f;
+		m_fBurstInterval = 0.15f;		
+		m_fRestTimer = 0.f;
+		m_fRestInterval = 1.5f;
+		m_bResting = false;
 	}
 }
 
@@ -102,7 +107,7 @@ void Enemy::OnCollision(GameObject& other)
 {
 	if (!IsActive())	return;
 
-
+	// TODO : 피격 사운드
 }
 
 
@@ -132,22 +137,35 @@ void Enemy::MonsterSpawn(float deltaTime)
 {
 	SetY(GetY() + GetSpeed() * deltaTime);
 
-	if (GetY() >= m_fTargetY)
+	if (GetY() >= m_fSpawnTargetY)
 	{
-		SetY(m_fTargetY);
+		SetY(m_fSpawnTargetY);
 		m_state = EnemyState::ATTACK;
-		m_fFireTimer = 0.f;
 	}
 }
 
 void Enemy::MonsterAttack(float deltaTime)
 {
-	m_fFireTimer += deltaTime;
-
-	if (m_fFireTimer >= m_fFireInterval)
+	if (m_bResting)
 	{
+		m_fRestTimer += deltaTime;
+		if (m_fRestTimer >= m_fRestInterval)
+		{
+			m_fRestTimer  = 0.f;
+			m_nBurstCount = 0;
+			m_bResting = false;
+		}
+		return;
+	}
+
+	m_fBurstTimer += deltaTime;
+	if (m_fBurstTimer >= m_fBurstInterval)
+	{
+		m_fBurstTimer = 0.f;
 		MonsterFire();
-		m_fFireTimer = 0.f;
+		++m_nBurstCount;
+
+		if (m_nBurstCount >= m_nBurstMax)	m_bResting = true;
 	}
 }
 
@@ -155,16 +173,50 @@ void Enemy::MonsterFire()
 {
 	float fLeftGunX = GetX() + 10.f;
 	float fRightGunX = GetX() + GetWidth() - 10.f;
-	float gunY = GetY() + GetHeight() + 10.f;
+	float fGunY = GetY() + GetHeight() + 10.f;
 
-	Bullet* leftBullet = new Bullet(fLeftGunX, gunY, 200.f, BulletType::MONSTERBULLET);
-	Bullet* rightBullet = new Bullet(fRightGunX, gunY, 200.f, BulletType::MONSTERBULLET);
+	float targetX = m_gameWorld->GetPlayer()->GetX() + m_gameWorld->GetPlayer()->GetWidth() / 2.f;
+	float targetY = m_gameWorld->GetPlayer()->GetY() + m_gameWorld->GetPlayer()->GetHeight() / 2.f;
 
-	leftBullet->SetDamage(GetDamage());
-	rightBullet->SetDamage(GetDamage());
+	int damage = GetDamage();
 
-	m_gameWorld->AddObject(leftBullet);
-	m_gameWorld->AddObject(rightBullet);
+	// 조준샷 + 왼쪽으로 퍼지는 3way
+	BulletPattern::AimShot(
+		m_gameWorld,
+		fLeftGunX, fGunY,
+		targetX, targetY,
+		200.f,
+		damage,
+		BulletType::MONSTERBULLET
+	);
+	BulletPattern::NWayShot(
+		m_gameWorld,
+		fLeftGunX, fGunY,
+		150.f,
+		3,
+		45.f,
+		damage,
+		BulletType::MONSTERBULLET
+	);
+
+	// 조준샷 + 오른쪽으로 퍼지는 3way
+	BulletPattern::AimShot(
+		m_gameWorld,
+		fRightGunX, fGunY,
+		targetX, targetY,
+		200.f,
+		damage,
+		BulletType::MONSTERBULLET
+	);
+	BulletPattern::NWayShot(
+		m_gameWorld,
+		fRightGunX, fGunY,
+		150.f,
+		3,
+		45.f,
+		damage,
+		BulletType::MONSTERBULLET
+	);
 }
 
 void Enemy::GoonsSpawn(float deltaTime)
