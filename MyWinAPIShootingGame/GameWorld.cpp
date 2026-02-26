@@ -7,6 +7,8 @@
 GameWorld::GameWorld()
 	: m_player(nullptr)
 {
+	m_nCurrentWave = 0;
+	m_fWaveTimer = 0.f;
 }
 
 GameWorld::~GameWorld()
@@ -22,8 +24,7 @@ void GameWorld::Initialize()
 	m_objects.push_back(new Background());
 	m_objects.push_back(m_player);
 
-	// 임시 몬스터 추가.
-	m_objects.push_back(new Enemy(100.f, -100.f, 200.f, EnemyType::MONSTER, this));
+	m_waves = WaveLoader::GetWaves();
 }
 
 void GameWorld::AddObject(GameObject* object)
@@ -33,6 +34,8 @@ void GameWorld::AddObject(GameObject* object)
 
 void GameWorld::Update(RECT& client, float deltaTime)
 {
+	UpdateWave(deltaTime);
+
 	for (auto obj : m_objects)
 	{
 		if (obj->IsActive())
@@ -42,6 +45,8 @@ void GameWorld::Update(RECT& client, float deltaTime)
 	CheckCollisions();
 	RemoveInactiveObjects();
 	ProcessSpawnQueue();
+
+	CheckWaveCleared();
 }
 
 void GameWorld::Render(Renderer& renderer)
@@ -181,4 +186,39 @@ void GameWorld::HandleFire(float deltaTime)
 
 		fireTimer = 0.f;
 	}
+}
+
+void GameWorld::UpdateWave(float deltaTime)
+{
+	if (m_nCurrentWave >= static_cast<int>(m_waves.size()))	return;
+
+	m_fWaveTimer += deltaTime;
+	
+	for (auto& event : m_waves[m_nCurrentWave].spawnEvents)
+	{
+		if (!event.spawned && m_fWaveTimer >= event.spawnTime)
+		{
+			Enemy* enemy = new Enemy(
+				event.x, event.y, event.speed,
+				event.enemyType, this
+			);
+			AddObject(enemy);
+			event.spawned = true;
+		}
+	}
+}
+
+void GameWorld::CheckWaveCleared()
+{
+	if (m_nCurrentWave >= static_cast<int>(m_waves.size()))	return;
+
+	for (auto& event : m_waves[m_nCurrentWave].spawnEvents)
+		if (!event.spawned)	return;
+	
+	for (auto obj : m_objects)
+		if (obj->IsActive() && obj->GetType() == GameObjectType::ENEMY)	return;
+
+	std::cout << "Wave " << m_nCurrentWave + 1 << " cleared!" << std::endl;
+	++m_nCurrentWave;
+	m_fWaveTimer = 0.f;
 }

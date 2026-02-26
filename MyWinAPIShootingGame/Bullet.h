@@ -8,6 +8,7 @@ enum class BulletType
 {
 	PLAYERBULLET,
 	MONSTERBULLET,
+	GOONSBULLET,
 	MOTHERSHIPBULLET,
 	DRAGONBULLET,
 };
@@ -19,12 +20,14 @@ private:
 	BulletType m_bulletType;
 	int m_nSrcX, m_nSrcY;
 	float m_fDirX, m_fDirY;
+	float m_fAnimDelay;
 	
 public:
 	Bullet(float x, float y, float speed, int damage, BulletType bulletType);
 	~Bullet() {};
 
 	void Update(RECT& client, float deltaTime) override;
+	void SpriteAnimation(float deltaTime);
 	void Render(Renderer& renderer) override;
 	void OnCollision(GameObject& other) override;
 

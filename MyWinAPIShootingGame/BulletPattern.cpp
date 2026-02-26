@@ -42,7 +42,7 @@ void BulletPattern::RotateShot(
 		world->AddObject(bullet);
 	}
 	currentAngle += angleStep; // 다음 회전 각도 업데이트
-	if (currentAngle >= 360.f) currentAngle -= 360.f;
+	if (currentAngle >= 135.f) currentAngle -= 90.f;
 }
 
 void BulletPattern::AimShot(
@@ -60,4 +60,6 @@ void BulletPattern::AimShot(
 	bullet->SetDirection(angle);
 	world->AddObject(bullet);
 }
+
+
 

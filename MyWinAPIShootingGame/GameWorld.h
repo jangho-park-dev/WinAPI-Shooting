@@ -1,5 +1,6 @@
 #pragma once
 #include "GameObject.h"
+#include "WaveLoader.h"	
 #include <queue>
 
 class Renderer;
@@ -13,6 +14,10 @@ private:
 	std::vector<GameObject*> m_objects;
 	std::queue<GameObject*> m_spawnQueue;
 	Player* m_player;
+
+	std::vector<Wave> m_waves;
+	int m_nCurrentWave;
+	float m_fWaveTimer;
 
 public:
 	GameWorld();
@@ -30,6 +35,8 @@ public:
 	void CheckCollisions();
 	void HandleInput(float deltaTime);
 	void HandleFire(float deltaTime);
+	void UpdateWave(float deltaTime);
+	void CheckWaveCleared();
 
 	bool KeyDown(int keyCode);
 	bool KeyUp(int keyCode);

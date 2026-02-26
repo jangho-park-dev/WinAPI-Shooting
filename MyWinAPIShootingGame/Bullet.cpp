@@ -23,9 +23,12 @@ Bullet::Bullet(float x, float y, float speed, int damage, BulletType bulletType)
 	m_fDirX = 0.f;
 	m_fDirY = 0.f;
 
+	m_fAnimDelay = 0.15f;
+
 	switch (m_bulletType)
 	{
 	case BulletType::PLAYERBULLET:			m_nSrcY = 32;	m_fDirY = -1.f;	break;
+	case BulletType::GOONSBULLET:			m_nSrcY = 0;	break;
 	case BulletType::MONSTERBULLET:		m_nSrcY = 8;	break;
 	case BulletType::MOTHERSHIPBULLET:	m_nSrcY = 16;	break;
 	case BulletType::DRAGONBULLET:		m_nSrcY = 24;	break;
@@ -35,6 +38,8 @@ Bullet::Bullet(float x, float y, float speed, int damage, BulletType bulletType)
 void Bullet::Update(RECT& client, float deltaTime)
 {
 	if (!IsActive())	return;
+
+	SpriteAnimation(deltaTime);
 	
 	// 총알 이동
 	SetX(GetX() + GetSpeed() * deltaTime * m_fDirX);
@@ -42,6 +47,20 @@ void Bullet::Update(RECT& client, float deltaTime)
 	if (GetY() + GetHeight() < 0 || GetY() > client.bottom ||
 		GetX() + GetWidth() < 0 || GetX() > client.right)
 		SetActive(false);
+}
+
+void Bullet::SpriteAnimation(float deltaTime)
+{
+	if (m_bulletType == BulletType::PLAYERBULLET)	return; // 플레이어 총알은 애니메이션 없음
+
+	m_fAnimDelay -= deltaTime;
+	if (m_fAnimDelay <= 0.f)
+	{
+		m_fAnimDelay = 0.15f;
+		m_nSrcX += 8;
+		if (m_nSrcX >= m_bulletSprite->GetWidth())
+			m_nSrcX = 0;
+	}
 }
 
 void Bullet::Render(Renderer& renderer)

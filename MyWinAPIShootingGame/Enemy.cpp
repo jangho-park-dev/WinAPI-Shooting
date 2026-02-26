@@ -6,7 +6,6 @@ Enemy::Enemy(float x, float y, float speed, EnemyType type, GameWorld* gameWorld
 	: m_gameWorld(gameWorld)
 	, m_enemyType(type)
 	, m_state(EnemyState::SPAWN)
-	, m_fSpawnTargetY(0.f)
 {
 	SetSprite();
 	SetType(GameObjectType::ENEMY);
@@ -17,23 +16,107 @@ Enemy::Enemy(float x, float y, float speed, EnemyType type, GameWorld* gameWorld
 	SetSpeed(speed);
 	SetWH();
 	SetHealth(300);
-	SetDamage(10);
 	SetCollider(new BoxCollider(this));
-	
+	SetBehavior();
 
-	if (m_enemyType == EnemyType::MONSTER)
-	{
-		// 0.15초 간격으로 발사, 3발 발사 후 1.5초 휴식
-		m_nBurstCount = 0;
-		m_nBurstMax = 3;
-		m_fBurstTimer = 0.f;
-		m_fBurstInterval = 0.15f;		
-		m_fRestTimer = 0.f;
-		m_fRestInterval = 1.5f;
-		m_bResting = false;
-	}
+	m_nSrcX = 0;
 }
 
+void Enemy::SetBehavior()
+{
+	switch (m_enemyType)
+	{
+	case EnemyType::MONSTER:
+	{
+		// 0.15초 간격으로 발사, 3발 발사 후 2초 휴식
+		m_behavior.nBurstCount = 0;
+		m_behavior.nBurstMax = 3;
+		m_behavior.fBurstTimer = 0.f;
+		m_behavior.fBurstInterval = 0.15f;
+		m_behavior.fRestTimer = 0.f;
+		m_behavior.fRestInterval = 2.f;
+		m_behavior.bResting = false;
+
+		// 회전샷 초기 각도
+		m_behavior.fRotateAngle = 30.f;
+		// 목표 Y지점
+		m_behavior.fSpawnTargetY = 0.f;
+		// 사인 곡선 이동 타이머
+		m_behavior.fSineMoveTimer = 0.f;
+		// 사인 곡선 이동 진폭
+		m_behavior.fSineMoveAmplitude = 0.f;
+		// 데미지
+		SetDamage(10);
+	}
+	break;
+	case EnemyType::GOONS:
+	{
+		// 0.3초 간격으로 발사, 1발 발사 후 0.3초 휴식
+		m_behavior.nBurstCount = 0;
+		m_behavior.nBurstMax = 1;
+		m_behavior.fBurstTimer = 0.f;
+		m_behavior.fBurstInterval = 0.3f;
+		m_behavior.fRestTimer = 0.f;
+		m_behavior.fRestInterval = 0.3f;
+		m_behavior.bResting = false;
+		// 회전샷 초기 각도
+		m_behavior.fRotateAngle = 30.f;
+		// 목표 Y지점
+		m_behavior.fSpawnTargetY = 700.f;
+		// 사인 곡선 이동 타이머
+		m_behavior.fSineMoveTimer = 0.f;
+		// 사인 곡선 이동 진폭
+		m_behavior.fSineMoveAmplitude = 100.f;
+		// 데미지
+		SetDamage(5);
+		// Goons는 스프라이트 시트에서 랜덤한 X 좌표를 사용
+		m_nSrcX = (rand() % 3) * 18;
+	}
+	break;
+	case EnemyType::MOTHERSHIP:
+	{
+		// 0.2초 간격으로 발사, 5발 발사 후 3초 휴식
+		m_behavior.nBurstCount = 0;
+		m_behavior.nBurstMax = 5;
+		m_behavior.fBurstTimer = 0.f;
+		m_behavior.fBurstInterval = 0.2f;
+		m_behavior.fRestTimer = 0.f;
+		m_behavior.fRestInterval = 3.f;
+		m_behavior.bResting = false;
+		// 회전샷 초기 각도
+		m_behavior.fRotateAngle = 30.f;
+		// 목표 Y지점
+		m_behavior.fSpawnTargetY = 0.f;
+		// 사인 곡선 이동 타이머
+		m_behavior.fSineMoveTimer = 0.f;
+		// 사인 곡선 이동 진폭
+		m_behavior.fSineMoveAmplitude = 0.f;
+		SetDamage(10);
+	}
+	break;
+	case EnemyType::DRAGON:
+	{
+		// 0.1초 간격으로 발사, 10발 발사 후 5초 휴식
+		m_behavior.nBurstCount = 0;
+		m_behavior.nBurstMax = 10;
+		m_behavior.fBurstTimer = 0.f;
+		m_behavior.fBurstInterval = 0.1f;
+		m_behavior.fRestTimer = 0.f;
+		m_behavior.fRestInterval = 5.f;
+		m_behavior.bResting = false;
+		// 회전샷 초기 각도
+		m_behavior.fRotateAngle = 30.f;
+		// 목표 Y지점
+		m_behavior.fSpawnTargetY = 100.f;
+		// 사인 곡선 이동 타이머
+		m_behavior.fSineMoveTimer = 0.f;
+		// 사인 곡선 이동 진폭
+		m_behavior.fSineMoveAmplitude = 0.f;
+		SetDamage(10);
+	}
+	break;
+	}
+}
 
 void Enemy::SetSprite()
 {
@@ -97,10 +180,21 @@ void Enemy::Render(Renderer& renderer)
 	int drawX = static_cast<int>(GetX() + 0.5f);
 	int drawY = static_cast<int>(GetY() + 0.5f);
 
-	renderer.DrawSprite(
-		*m_sprite,
-		drawX, drawY
-	);
+	if (m_enemyType != EnemyType::GOONS)
+		renderer.DrawSprite(
+			*m_sprite, 
+			drawX, drawY
+		);
+	else
+	{
+		renderer.DrawSprite(
+			*m_sprite,
+			drawX, drawY,
+			m_nSrcX, 0,
+			GetWidth(), GetHeight()
+		);
+	}
+		
 }
 
 void Enemy::OnCollision(GameObject& other)
@@ -137,42 +231,42 @@ void Enemy::MonsterSpawn(float deltaTime)
 {
 	SetY(GetY() + GetSpeed() * deltaTime);
 
-	if (GetY() >= m_fSpawnTargetY)
+	if (GetY() >= m_behavior.fSpawnTargetY)
 	{
-		SetY(m_fSpawnTargetY);
+		SetY(m_behavior.fSpawnTargetY);
 		m_state = EnemyState::ATTACK;
 	}
 }
 
 void Enemy::MonsterAttack(float deltaTime)
 {
-	if (m_bResting)
+	if (m_behavior.bResting)
 	{
-		m_fRestTimer += deltaTime;
-		if (m_fRestTimer >= m_fRestInterval)
+		m_behavior.fRestTimer += deltaTime;
+		if (m_behavior.fRestTimer >= m_behavior.fRestInterval)
 		{
-			m_fRestTimer  = 0.f;
-			m_nBurstCount = 0;
-			m_bResting = false;
+			m_behavior.fRestTimer  = 0.f;
+			m_behavior.nBurstCount = 0;
+			m_behavior.bResting = false;
 		}
 		return;
 	}
 
-	m_fBurstTimer += deltaTime;
-	if (m_fBurstTimer >= m_fBurstInterval)
+	m_behavior.fBurstTimer += deltaTime;
+	if (m_behavior.fBurstTimer >= m_behavior.fBurstInterval)
 	{
-		m_fBurstTimer = 0.f;
+		m_behavior.fBurstTimer = 0.f;
 		MonsterFire();
-		++m_nBurstCount;
+		++m_behavior.nBurstCount;
 
-		if (m_nBurstCount >= m_nBurstMax)	m_bResting = true;
+		if (m_behavior.nBurstCount >= m_behavior.nBurstMax)	m_behavior.bResting = true;
 	}
 }
 
 void Enemy::MonsterFire()
 {
-	float fLeftGunX = GetX() + 10.f;
-	float fRightGunX = GetX() + GetWidth() - 10.f;
+	float fLeftGunX = GetX() + 12.f;
+	float fRightGunX = GetX() + GetWidth() - 18.f;
 	float fGunY = GetY() + GetHeight() + 10.f;
 
 	float targetX = m_gameWorld->GetPlayer()->GetX() + m_gameWorld->GetPlayer()->GetWidth() / 2.f;
@@ -185,7 +279,7 @@ void Enemy::MonsterFire()
 		m_gameWorld,
 		fLeftGunX, fGunY,
 		targetX, targetY,
-		200.f,
+		300.f,
 		damage,
 		BulletType::MONSTERBULLET
 	);
@@ -194,7 +288,7 @@ void Enemy::MonsterFire()
 		fLeftGunX, fGunY,
 		150.f,
 		3,
-		45.f,
+		30.f,
 		damage,
 		BulletType::MONSTERBULLET
 	);
@@ -204,7 +298,7 @@ void Enemy::MonsterFire()
 		m_gameWorld,
 		fRightGunX, fGunY,
 		targetX, targetY,
-		200.f,
+		300.f,
 		damage,
 		BulletType::MONSTERBULLET
 	);
@@ -213,30 +307,83 @@ void Enemy::MonsterFire()
 		fRightGunX, fGunY,
 		150.f,
 		3,
-		45.f,
+		30.f,
 		damage,
 		BulletType::MONSTERBULLET
 	);
 }
 
+void Enemy::SineMove(float deltaTime)
+{
+	m_behavior.fSineMoveTimer += deltaTime * 3.f;
+	SetX(GetX() + cosf(m_behavior.fSineMoveTimer) * m_behavior.fSineMoveAmplitude * deltaTime);
+	SetY(GetY() + GetSpeed() * deltaTime);
+}
+
 void Enemy::GoonsSpawn(float deltaTime)
 {
-
+	if (GetY() < 0)	SineMove(deltaTime);
+	else					m_state = EnemyState::ATTACK;
 }
 
 void Enemy::GoonsAttack(float deltaTime)
 {
+	SineMove(deltaTime);
+	if (GetY() >= m_behavior.fSpawnTargetY)	SetActive(false);
 
+
+	if (m_behavior.bResting)
+	{
+		m_behavior.fRestTimer += deltaTime;
+		if (m_behavior.fRestTimer >= m_behavior.fRestInterval)
+		{
+			m_behavior.fRestTimer = 0.f;
+			m_behavior.nBurstCount = 0;
+			m_behavior.bResting = false;
+		}
+		return;
+	}
+
+	m_behavior.fBurstTimer += deltaTime;
+	if (m_behavior.fBurstTimer >= m_behavior.fBurstInterval)
+	{
+		m_behavior.fBurstTimer = 0.f;
+		GoonsFire();
+		++m_behavior.nBurstCount;
+
+		if (m_behavior.nBurstCount >= m_behavior.nBurstMax)	m_behavior.bResting = true;
+	}
 }
 
 void Enemy::GoonsFire()
 {
+	float fGunX = GetX() + 4.f;
+	float fGunY = GetY() + GetHeight() + 10.f;
 
+	float targetX = m_gameWorld->GetPlayer()->GetX() + m_gameWorld->GetPlayer()->GetWidth() / 2.f;
+	float targetY = m_gameWorld->GetPlayer()->GetY() + m_gameWorld->GetPlayer()->GetHeight() / 2.f;
+
+	int damage = GetDamage();
+	
+	// 조준샷
+	BulletPattern::AimShot(
+		m_gameWorld,
+		fGunX, fGunY,
+		targetX, targetY,
+		150.f,
+		damage,
+		BulletType::GOONSBULLET
+	);
 }
 
 void Enemy::MothershipSpawn(float deltaTime)
 {
-
+	SetY(GetY() + GetSpeed() * deltaTime);
+	if (GetY() >= m_behavior.fSpawnTargetY)
+	{
+		SetY(m_behavior.fSpawnTargetY);
+		m_state = EnemyState::ATTACK;
+	}
 }
 
 void Enemy::MothershipAttack(float deltaTime)
