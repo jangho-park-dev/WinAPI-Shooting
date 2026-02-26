@@ -3,6 +3,7 @@
 #include "EnemyType.h"
 #include <fstream>
 #include <sstream>
+#include <filesystem>
 
 struct SpawnEvent
 {
@@ -35,19 +36,33 @@ public:
 	static std::vector<Wave> GetWaves()
 	{
 		std::vector<Wave> waves;
+
+		std::string basePath = "GameAssets/wave";
+		std::string extension = ".csv";
 		
-		std::string path1 = "GameAssets/wave1.csv";
-		std::string path2 = "GameAssets/wave2.csv";
-		//std::string path3 = "GameAssets/wave3.csv";
-		GetFileDataCSV(path1, waves);
-		GetFileDataCSV(path2, waves);
+		// wave 파일 개수 구하기
+		int fileCount = 0;
+		for (const auto& entry : std::filesystem::directory_iterator("GameAssets"))
+		{
+			if (entry.is_regular_file() && entry.path().extension() == extension && entry.path().stem().string().find("wave") == 0)
+			{
+				++fileCount;
+			}
+		}
+
+		// 반복문은 파일 개수만큼 반복
+		for (int i = 1; i <= fileCount; ++i)
+		{
+			std::string path = basePath + std::to_string(i) + extension;
+			LoadWavesFromFile(path, waves);
+		}
 
 		std::cout << "Wave loaded : " << waves.size() << std::endl;
 
 		return waves;
 	}
 
-	static void GetFileDataCSV(const std::string& path, std::vector<Wave>& waves)
+	static void LoadWavesFromFile(const std::string& path, std::vector<Wave>& waves)
 	{
 		Wave currentWave;
 
