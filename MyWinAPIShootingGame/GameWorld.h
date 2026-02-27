@@ -42,5 +42,6 @@ public:
 	bool KeyUp(int keyCode);
 
 	Player* GetPlayer() const { return m_player; }
+	int GetCurrentWave() const { return m_nCurrentWave; }
 };
 

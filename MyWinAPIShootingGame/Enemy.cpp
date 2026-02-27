@@ -1,6 +1,7 @@
 #include "Enemy.h"
 #include "GameWorld.h"
 #include "Player.h"
+#include "Item.h"
 
 Enemy::Enemy(float x, float y, float speed, EnemyType type, GameWorld* gameWorld)
 	: m_gameWorld(gameWorld)
@@ -15,11 +16,11 @@ Enemy::Enemy(float x, float y, float speed, EnemyType type, GameWorld* gameWorld
 	SetY(y);
 	SetSpeed(speed);
 	SetWH();
-	SetHealth(300);
 	SetCollider(new BoxCollider(this));
-	SetBehavior();
 
 	m_nSrcX = 0;
+
+	SetBehavior();
 }
 
 void Enemy::SetBehavior()
@@ -28,11 +29,11 @@ void Enemy::SetBehavior()
 	{
 	case EnemyType::MONSTER:
 	{
-		// 0.15초 간격으로 발사, 3발 발사 후 2초 휴식
+		// 0.2초 간격으로 10발 발사 후 2초 휴식
 		m_behavior.nBurstCount = 0;
-		m_behavior.nBurstMax = 3;
+		m_behavior.nBurstMax = 10;
 		m_behavior.fBurstTimer = 0.f;
-		m_behavior.fBurstInterval = 0.15f;
+		m_behavior.fBurstInterval = 0.2f;
 		m_behavior.fRestTimer = 0.f;
 		m_behavior.fRestInterval = 2.f;
 		m_behavior.bResting = false;
@@ -40,24 +41,25 @@ void Enemy::SetBehavior()
 		// 회전샷 초기 각도
 		m_behavior.fRotateAngle = 30.f;
 		// 목표 Y지점
-		m_behavior.fSpawnTargetY = 0.f;
+		m_behavior.fSpawnTargetY = static_cast<float>(rand() % 300);
 		// 사인 곡선 이동 타이머
 		m_behavior.fSineMoveTimer = 0.f;
 		// 사인 곡선 이동 진폭
 		m_behavior.fSineMoveAmplitude = 0.f;
 		// 데미지
 		SetDamage(10);
+		SetHealth(300 * (m_gameWorld->GetCurrentWave() + 1));
 	}
 	break;
 	case EnemyType::GOONS:
 	{
-		// 0.3초 간격으로 발사, 1발 발사 후 0.3초 휴식
+		// 0.3초 간격으로 1발 발사 후 1초 휴식
 		m_behavior.nBurstCount = 0;
 		m_behavior.nBurstMax = 1;
 		m_behavior.fBurstTimer = 0.f;
 		m_behavior.fBurstInterval = 0.3f;
 		m_behavior.fRestTimer = 0.f;
-		m_behavior.fRestInterval = 0.3f;
+		m_behavior.fRestInterval = 1.f;
 		m_behavior.bResting = false;
 		// 회전샷 초기 각도
 		m_behavior.fRotateAngle = 30.f;
@@ -71,6 +73,7 @@ void Enemy::SetBehavior()
 		SetDamage(5);
 		// Goons는 스프라이트 시트에서 랜덤한 X 좌표를 사용
 		m_nSrcX = (rand() % 3) * 18;
+		SetHealth(30 * (m_gameWorld->GetCurrentWave() + 1));
 	}
 	break;
 	case EnemyType::MOTHERSHIP:
@@ -92,6 +95,7 @@ void Enemy::SetBehavior()
 		// 사인 곡선 이동 진폭
 		m_behavior.fSineMoveAmplitude = 0.f;
 		SetDamage(10);
+		SetHealth(600);
 	}
 	break;
 	case EnemyType::DRAGON:
@@ -113,6 +117,7 @@ void Enemy::SetBehavior()
 		// 사인 곡선 이동 진폭
 		m_behavior.fSineMoveAmplitude = 0.f;
 		SetDamage(10);
+		SetHealth(3000);
 	}
 	break;
 	}
@@ -124,15 +129,19 @@ void Enemy::SetSprite()
 	{
 	case EnemyType::MONSTER:
 		m_sprite = ResourceManager::GetInstance().GetSprite(SpriteID::SPRITE_MONSTER);
+		m_sprite->SetSpriteSizeMultiplier(1.f);
 		break;
 	case EnemyType::MOTHERSHIP:
 		m_sprite = ResourceManager::GetInstance().GetSprite(SpriteID::SPRITE_MOTHERSHIP);
+		m_sprite->SetSpriteSizeMultiplier(1.f);
 		break;
 	case EnemyType::DRAGON:
 		m_sprite = ResourceManager::GetInstance().GetSprite(SpriteID::SPRITE_DRAGON);
+		m_sprite->SetSpriteSizeMultiplier(1.f);
 		break;
 	case EnemyType::GOONS:
 		m_sprite = ResourceManager::GetInstance().GetSprite(SpriteID::SPRITE_GOONS);
+		m_sprite->SetSpriteSizeMultiplier(1.2f);
 		break;
 	}
 }
@@ -142,22 +151,27 @@ void Enemy::SetWH()
 	switch (m_enemyType)
 	{
 	case EnemyType::MONSTER:
-		SetWidth(m_sprite->GetWidth());
-		SetHeight(m_sprite->GetHeight());
+		SetSrcWidth(m_sprite->GetWidth());
+		SetSrcHeight(m_sprite->GetHeight());
 		break;
 	case EnemyType::MOTHERSHIP:
-		SetWidth(240);
-		SetHeight(128);
+		SetSrcWidth(240);
+		SetSrcHeight(128);
 		break;
 	case EnemyType::DRAGON:
-		SetWidth(m_sprite->GetWidth());
-		SetHeight(m_sprite->GetHeight());
+		SetSrcWidth(m_sprite->GetWidth());
+		SetSrcHeight(m_sprite->GetHeight());
 		break;
 	case EnemyType::GOONS:
-		SetWidth(18);
-		SetHeight(18);
+		SetSrcWidth(18);
+		SetSrcHeight(18);
 		break;
 	}
+
+	SetRenderSize(
+		static_cast<int>(GetSrcWidth() * m_sprite->GetSpriteSizeMultiplier()),
+		static_cast<int>(GetSrcHeight() * m_sprite->GetSpriteSizeMultiplier())
+	);
 }
 
 void Enemy::Update(RECT& client, float deltaTime)
@@ -180,18 +194,19 @@ void Enemy::Render(Renderer& renderer)
 	int drawX = static_cast<int>(GetX() + 0.5f);
 	int drawY = static_cast<int>(GetY() + 0.5f);
 
-	if (m_enemyType != EnemyType::GOONS)
+	if (m_enemyType == EnemyType::GOONS)
 		renderer.DrawSprite(
-			*m_sprite, 
-			drawX, drawY
+			*m_sprite,
+			drawX, drawY,
+			m_nSrcX, 0,
+			GetSrcWidth(), GetSrcHeight(),
+			GetRenderWidth(), GetRenderHeight()
 		);
 	else
 	{
 		renderer.DrawSprite(
 			*m_sprite,
-			drawX, drawY,
-			m_nSrcX, 0,
-			GetWidth(), GetHeight()
+			drawX, drawY
 		);
 	}
 		
@@ -202,6 +217,24 @@ void Enemy::OnCollision(GameObject& other)
 	if (!IsActive())	return;
 
 	// TODO : 피격 사운드
+}
+
+void Enemy::OnDeath()
+{
+	ItemType dropType = ItemType::SPEEDUP;
+	switch (rand() % 4)
+	{
+	case 0:	dropType = ItemType::SPEEDUP;		break;
+	case 1:	dropType = ItemType::POWERUP;	break;
+	case 2:	dropType = ItemType::BULLETUP;	break;
+	case 3:	dropType = ItemType::HEALTH;		break;
+	}
+	if (rand() % 100 < 30)	// 30% 확률로 아이템 드롭
+		m_gameWorld->AddObject(new Item(
+			GetX() + GetRenderWidth() / 2.f - 4.f,
+			GetY() + GetRenderHeight() / 2.f - 4.f,
+			100.f, dropType)
+		);
 }
 
 
@@ -265,52 +298,27 @@ void Enemy::MonsterAttack(float deltaTime)
 
 void Enemy::MonsterFire()
 {
-	float fLeftGunX = GetX() + 12.f;
-	float fRightGunX = GetX() + GetWidth() - 18.f;
-	float fGunY = GetY() + GetHeight() + 10.f;
+	/*float fLeftGunX = GetX() + 12.f;
+	float fRightGunX = GetX() + GetRenderWidth() - 18.f;
+	float fGunY = GetY() + GetRenderHeight() + 10.f;*/
 
-	float targetX = m_gameWorld->GetPlayer()->GetX() + m_gameWorld->GetPlayer()->GetWidth() / 2.f;
-	float targetY = m_gameWorld->GetPlayer()->GetY() + m_gameWorld->GetPlayer()->GetHeight() / 2.f;
+	float targetX = m_gameWorld->GetPlayer()->GetX() + m_gameWorld->GetPlayer()->GetRenderWidth() / 2.f;
+	float targetY = m_gameWorld->GetPlayer()->GetY() + m_gameWorld->GetPlayer()->GetRenderHeight() / 2.f;
 
 	int damage = GetDamage();
 
-	// 조준샷 + 왼쪽으로 퍼지는 3way
-	BulletPattern::AimShot(
+	// 회전샷
+	BulletPattern::RotateShot(
 		m_gameWorld,
-		fLeftGunX, fGunY,
-		targetX, targetY,
-		300.f,
+		GetX() + GetRenderWidth() / 2, GetY() + GetRenderHeight() / 2,
+		200.f,
+		20,
+		360.f,
 		damage,
-		BulletType::MONSTERBULLET
+		BulletType::MONSTERBULLET,
+		m_behavior.fRotateAngle
 	);
-	BulletPattern::NWayShot(
-		m_gameWorld,
-		fLeftGunX, fGunY,
-		150.f,
-		3,
-		30.f,
-		damage,
-		BulletType::MONSTERBULLET
-	);
-
-	// 조준샷 + 오른쪽으로 퍼지는 3way
-	BulletPattern::AimShot(
-		m_gameWorld,
-		fRightGunX, fGunY,
-		targetX, targetY,
-		300.f,
-		damage,
-		BulletType::MONSTERBULLET
-	);
-	BulletPattern::NWayShot(
-		m_gameWorld,
-		fRightGunX, fGunY,
-		150.f,
-		3,
-		30.f,
-		damage,
-		BulletType::MONSTERBULLET
-	);
+	m_behavior.fRotateAngle += 5.f; // 바로 다음 발사 각도 업데이트
 }
 
 void Enemy::SineMove(float deltaTime)
@@ -358,10 +366,10 @@ void Enemy::GoonsAttack(float deltaTime)
 void Enemy::GoonsFire()
 {
 	float fGunX = GetX() + 4.f;
-	float fGunY = GetY() + GetHeight() + 10.f;
+	float fGunY = GetY() + GetRenderHeight() + 10.f;
 
-	float targetX = m_gameWorld->GetPlayer()->GetX() + m_gameWorld->GetPlayer()->GetWidth() / 2.f;
-	float targetY = m_gameWorld->GetPlayer()->GetY() + m_gameWorld->GetPlayer()->GetHeight() / 2.f;
+	float targetX = m_gameWorld->GetPlayer()->GetX() + m_gameWorld->GetPlayer()->GetRenderWidth() / 2.f;
+	float targetY = m_gameWorld->GetPlayer()->GetY() + m_gameWorld->GetPlayer()->GetRenderHeight() / 2.f;
 
 	int damage = GetDamage();
 	

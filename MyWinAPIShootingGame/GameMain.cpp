@@ -20,6 +20,9 @@ GameMain::~GameMain()
 
 bool GameMain::Initialize(int nCmdShow)
 {
+	// 랜덤 시드 초기화
+	srand(static_cast<unsigned int>(time(nullptr)));
+
 	RECT rect = { 0, 0, 480, 640 };
 	AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, FALSE);
 

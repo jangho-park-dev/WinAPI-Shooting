@@ -13,7 +13,7 @@ enum class SpriteID
 	SPRITE_MOTHERSHIP,
 	SPRITE_DRAGON,
 	SPRITE_GOONS,
-	SRPITE_POWERUP,
+	SPRITE_ITEM,
 };
 
 struct SpriteEntry
@@ -92,9 +92,9 @@ public:
 			}
 		);
 
-		// PowerUp sprite
+		// Item sprite
 		m_sprites.push_back(SpriteEntry{
-			SpriteID::SRPITE_POWERUP,
+			SpriteID::SPRITE_ITEM,
 			new Sprite(L"GameAssets/VULCAN-Powerup_Sheet.bmp", true, RGB(255, 0, 255))
 			}
 		);

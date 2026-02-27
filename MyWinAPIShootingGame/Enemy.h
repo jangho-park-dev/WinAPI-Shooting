@@ -55,14 +55,16 @@ public:
 	~Enemy() {};
 
 	void Update(RECT& client, float deltaTime) override;
-	void EnemyAttackProcess(float deltaTime);
-	void EnemySpawnProcess(float deltaTime);
 	void Render(Renderer& renderer) override;
 	void OnCollision(GameObject& other) override;
+	void OnDeath();
 
 	void SetSprite();
 	void SetWH();
 	void SetState(EnemyState state) { m_state = state; }
+
+	void EnemyAttackProcess(float deltaTime);
+	void EnemySpawnProcess(float deltaTime);
 
 	void MonsterAttack(float deltaTime);
 	void MonsterSpawn(float deltaTime);

@@ -32,14 +32,19 @@ Renderer::~Renderer()
 }
 
 void Renderer::DrawSprite(
-	const Sprite& sprite,			// 스프라이트 정보
-	int x, int y,							// 화면에 그릴 시작 위치
-	int srcX, int srcY,				// 스프라이트 시트에서 가져올 시작 위치
-	int width, int height			// 그릴 영역 크기
+	const Sprite& sprite,				// 스프라이트 정보
+	int x, int y,								// 화면에 그릴 시작 위치
+	int srcX, int srcY,					// 스프라이트 시트에서 가져올 시작 위치
+	int width, int height,				// 그릴 영역 크기
+	int destWidth, int destHeight	// 화면에 그릴 크기(확대/축소)
 )
 {
 	if (width < 0) width = sprite.GetWidth();
 	if (height < 0) height = sprite.GetHeight();
+	
+	// 기본값은 원본 크기
+	if (destWidth < 0)  destWidth = width;
+	if (destHeight < 0) destHeight = height;
 
 	// 메모리 DC(m_hMemDC)와 호환되는 임시 DC 생성
 	// 비트맵을 선택해서 소스 DC로 사용하기 위함
@@ -49,6 +54,9 @@ void Renderer::DrawSprite(
 	// 기존에 선택돼 있던 비트맵은 old에 저장
 	HBITMAP old = (HBITMAP)SelectObject(hSrcDC, sprite.GetBitmap());
 
+	// 확대/축소 시 픽셀을 단순 복사하여 처리하도록 설정
+	SetStretchBltMode(m_hMemDC, COLORONCOLOR);
+
 	// 스프라이트가 컬러키 투명도를 사용하는 경우
 	if (sprite.UseColorKey())
 	{
@@ -56,22 +64,23 @@ void Renderer::DrawSprite(
 		TransparentBlt(
 			m_hMemDC,						// 목적지 DC(백버퍼)
 			x, y,									// 화면에 그릴 시작 위치
-			width, height,						// 크기
+			destWidth, destHeight,		// 목적지 크기(확대/축소)
 			hSrcDC,								// 소스 DC(스프라이트 비트맵)
 			srcX, srcY,							// 스프라이트 시트에서 가져올 시작 위치
-			width, height,						// 크기
+			width, height,						// 원본 크기
 			sprite.GetColorKey()			// 투명하게 처리할 색
 		);
 	}
 	else
 	{
-		// 그냥 비트맵을 복사
-		BitBlt(
+		// 단순 복사하여 그리기(투명도 없음)
+		StretchBlt(
 			m_hMemDC,						// 목적지 DC(백버퍼)
 			x, y,									// 화면에 그릴 시작 위치
-			width, height,						// 크기
+			destWidth, destHeight,		// 목적지 크기(확대/축소)
 			hSrcDC,								// 소스 DC(스프라이트 비트맵)
 			srcX, srcY,							// 스프라이트 시트에서 가져올 시작 위치
+			width, height,						// 원본 크기
 			SRCCOPY							// 복사 방식(단순 복사 연산)
 		);
 	}

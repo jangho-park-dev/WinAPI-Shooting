@@ -5,14 +5,19 @@ Bullet::Bullet(float x, float y, float speed, int damage, BulletType bulletType)
 	: m_bulletType(bulletType)
 {
 	m_bulletSprite = ResourceManager::GetInstance().GetSprite(SpriteID::SPRITE_BULLET);
+	m_bulletSprite->SetSpriteSizeMultiplier(1.3f);
 	SetType(GameObjectType::BULLET);
 	SetLayer(GameObjectLayer::BULLET_LAYER);
 	SetActive(true);
 	SetX(x);
 	SetY(y);
 	SetSpeed(speed);
-	SetWidth(8);
-	SetHeight(8);
+	SetSrcWidth(8);
+	SetSrcHeight(8);
+	SetRenderSize(
+		static_cast<int>(GetSrcWidth() * m_bulletSprite->GetSpriteSizeMultiplier()),
+		static_cast<int>(GetSrcHeight() * m_bulletSprite->GetSpriteSizeMultiplier())
+	);
 	SetHealth(1);
 	SetDamage(damage);
 	SetCollider(new BoxCollider(this));
@@ -44,8 +49,8 @@ void Bullet::Update(RECT& client, float deltaTime)
 	// ÃÑ¾Ë ÀÌµ¿
 	SetX(GetX() + GetSpeed() * deltaTime * m_fDirX);
 	SetY(GetY() + GetSpeed() * deltaTime * m_fDirY);
-	if (GetY() + GetHeight() < 0 || GetY() > client.bottom ||
-		GetX() + GetWidth() < 0 || GetX() > client.right)
+	if (GetY() + GetSrcHeight() < 0 || GetY() > client.bottom ||
+		GetX() + GetSrcWidth() < 0 || GetX() > client.right)
 		SetActive(false);
 }
 
@@ -71,10 +76,11 @@ void Bullet::Render(Renderer& renderer)
 	int drawY = static_cast<int>(GetY() + 0.5f);
 
 	renderer.DrawSprite(
-		*m_bulletSprite, 
+		*m_bulletSprite,
 		drawX, drawY,
 		m_nSrcX, m_nSrcY,
-		GetWidth(), GetHeight()
+		GetSrcWidth(), GetSrcHeight(),
+		GetRenderWidth(), GetRenderHeight()
 	);
 }
 
@@ -89,10 +95,9 @@ void Bullet::OnCollision(GameObject& other)
 	if (other.GetHealth() <= 0)
 	{
 		other.SetHealth(0);
+		other.OnDeath();
 		other.SetActive(false);
 	}
-	std::cout << "Bullet hit type_num " << static_cast<int>(other.GetType())
-		<< ",\tother hp : " << other.GetHealth() << std::endl;
 
 	SetActive(false);
 }

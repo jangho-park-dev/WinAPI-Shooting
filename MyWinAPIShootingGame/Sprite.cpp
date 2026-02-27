@@ -7,6 +7,7 @@ Sprite::Sprite()
 	m_nHeight = 0;
 	m_bUseColorKey = false;
 	m_colorKey = 0;
+	m_fSpriteSizeMultiplier = 1.f;
 }
 
 Sprite::Sprite(const wchar_t* path, bool useColorKey, COLORREF key)

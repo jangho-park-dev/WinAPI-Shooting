@@ -19,8 +19,9 @@ public:
 		SetActive(true);
 		SetX(0.f);
 		SetY(0.f);
-		SetWidth(m_backgroundSprite->GetWidth());
-		SetHeight(m_backgroundSprite->GetHeight());
+		SetSrcWidth(m_backgroundSprite->GetWidth());
+		SetSrcHeight(m_backgroundSprite->GetHeight());
+		SetRenderSize(GetSrcWidth(), GetSrcHeight());
 	}
 	
 	void Render(Renderer& renderer)

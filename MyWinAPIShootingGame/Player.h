@@ -44,9 +44,12 @@ private:
 	Sprite* m_playerOutlineSprite;
 	std::vector<Trail> m_trails;
 
+	int m_nNumberOfBullets;
+	float m_fBaseSpeed;
+
 public:
 	Player(float x = 240, float y = 600, float speed = 300);
-	virtual ~Player() {};
+	~Player() {};
 	void Update(RECT& client, float deltaTime) override;
 	void Render(Renderer& renderer) override;
 	void OnCollision(GameObject& other) override;
@@ -54,7 +57,9 @@ public:
 	void Move(RECT& client, float deltaTime);
 	void UpdateTrails(float deltaTime);
 
-
+	int GetNumberOfBullets() const { return m_nNumberOfBullets; }
+	float GetBaseSpeed() const { return m_fBaseSpeed; }
+	void SetNumberOfBullets(int num) { m_nNumberOfBullets = num; }
 	void SetDirection(Keystates key, bool tf);
 
 	// trail 스프라이트 시트의 srcX, srcY 좌표 반환

@@ -33,7 +33,8 @@ public:
 		const Sprite& sprite,
 		int x, int y,
 		int srcX = 0, int srcY = 0,
-		int width = -1, int height = -1
+		int width = -1, int height = -1,
+		int destWidth = -1, int destHeight = -1
 	);
 
 };

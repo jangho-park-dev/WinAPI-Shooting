@@ -1,12 +1,15 @@
 #pragma once
 #include "Player.h"
+#include "Item.h"
 
 Player::Player(float x, float y, float speed)
 {
 	m_playerSprite = ResourceManager::GetInstance().GetSprite(SpriteID::SPRITE_PLAYER);
 	m_playerTrailSprite = ResourceManager::GetInstance().GetSprite(SpriteID::SPRITE_PLAYERTRAIL);
 	m_playerOutlineSprite = ResourceManager::GetInstance().GetSprite(SpriteID::SPRITE_PLAYEROUTLINE);
-	
+	m_playerSprite->SetSpriteSizeMultiplier(1.2f);
+	m_playerTrailSprite->SetSpriteSizeMultiplier(1.2f);
+	m_playerOutlineSprite->SetSpriteSizeMultiplier(1.2f);
 
 	SetType(GameObjectType::PLAYER);
 	SetLayer(GameObjectLayer::PLAYER_LAYER);
@@ -14,9 +17,13 @@ Player::Player(float x, float y, float speed)
 	SetX(x);
 	SetY(y);
 	SetSpeed(speed);
-	SetWidth(m_playerSprite->GetWidth());
-	SetHeight(m_playerSprite->GetHeight());
-	SetHealth(100);
+	SetSrcWidth(m_playerOutlineSprite->GetWidth());
+	SetSrcHeight(m_playerOutlineSprite->GetHeight());
+	SetRenderSize(
+		static_cast<int>(GetSrcWidth() * m_playerOutlineSprite->GetSpriteSizeMultiplier()),
+		static_cast<int>(GetSrcHeight() * m_playerOutlineSprite->GetSpriteSizeMultiplier())
+	);
+	SetHealth(100000);
 	SetDamage(10);
 	SetCollider(new BoxCollider(this));
 
@@ -29,6 +36,9 @@ Player::Player(float x, float y, float speed)
 	m_fIdleTimer = 0.f;
 	m_fTrailTimer = 0.f;
 	m_nTrailSpriteIndex = 0;
+
+	SetNumberOfBullets(1);
+	m_fBaseSpeed = speed;
 }
 
 void Player::Update(RECT& client, float deltaTime)
@@ -60,10 +70,10 @@ void Player::Move(RECT& client, float deltaTime)
 
 	if (GetX() < 0.f)	SetX(0.f);
 	if (GetY() < 0.f)	SetY(0.f);
-	if (GetX() + GetWidth() > client.right)		SetX(static_cast<float>(client.right - m_playerSprite->GetWidth()));
-	if (GetY() + GetHeight() > client.bottom)	SetY(static_cast<float>(client.bottom - m_playerSprite->GetHeight()));
-
-	//std::cout << "Player(x, y) : (" << GetX() << ", " << GetY() << ")" << std::endl;
+	if (GetX() + GetRenderWidth() > client.right)
+		SetX(static_cast<float>(client.right - GetRenderWidth()));
+	if (GetY() + GetRenderHeight() > client.bottom)
+		SetY(static_cast<float>(client.bottom - GetRenderHeight()));
 }
 
 void Player::UpdateTrails(float deltaTime)
@@ -110,22 +120,65 @@ void Player::Render(Renderer& renderer)
 		int sx = GetSrcX(t.order);
 		int sy = GetSrcY(t.order);
 
+		// sprite는 트레일, 크기는 player 본체 크기로
 		renderer.DrawSprite(
 			*m_playerTrailSprite,
 			static_cast<int>(t.x),
 			static_cast<int>(t.y),
 			sx, sy,
-			16, 16
+			m_playerSprite->GetWidth(), m_playerSprite->GetHeight(),
+			static_cast<int>(m_playerSprite->GetWidth() * m_playerSprite->GetSpriteSizeMultiplier()),
+			static_cast<int>(m_playerSprite->GetHeight() * m_playerSprite->GetSpriteSizeMultiplier())
 		);
 	}
 
 	// 본체 나중에
-	renderer.DrawSprite(*m_playerOutlineSprite, drawX, drawY);
+	renderer.DrawSprite(*m_playerOutlineSprite,
+		drawX, drawY,
+		0, 0,
+		GetSrcWidth(), GetSrcHeight(),
+		GetRenderWidth(), GetRenderHeight()
+	);
 }
 
 void Player::OnCollision(GameObject& other)
 {
 	// TODO : 피격 사운드
+	if (other.GetType() == GameObjectType::ITEM)
+	{
+		switch (dynamic_cast<Item*>(&other)->GetItemType())
+		{
+		case ItemType::SPEEDUP:
+		{
+			m_fBaseSpeed += 20.f;
+			SetSpeed(m_fBaseSpeed);
+			std::cout << "Speed-up item collected! Speed increased to " << GetSpeed() << std::endl;
+		}
+		break;
+		case ItemType::POWERUP:
+		{
+			SetDamage(GetDamage() + 5);
+			std::cout << "Power-up item collected! Damage increased to " << GetDamage() << std::endl;
+		}
+		break;
+		case ItemType::BULLETUP:
+		{
+			if (GetNumberOfBullets() < 4)
+			{
+				SetNumberOfBullets(GetNumberOfBullets() + 1);
+				std::cout << "Bullet-up item collected! Number of bullets increased to " << GetNumberOfBullets() << std::endl;
+			}
+		}
+		break;
+		case ItemType::HEALTH:
+		{
+			SetHealth(GetHealth() + 20);
+			//if (GetHealth() > 100) SetHealth(100);
+			std::cout << "Health item collected! Health increased to " << GetHealth() << std::endl;
+		}
+		break;
+		}
+	}
 }
 
 void Player::SetDirection(Keystates key, bool tf)

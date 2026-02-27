@@ -62,12 +62,13 @@ void GameWorld::Render(Renderer& renderer)
 
 void GameWorld::CheckCollisions()
 {
-	// 유효한 충돌 쌍 정의 (플레이어-적, 플레이어-총알, 적-총알)
+	// 유효한 충돌 쌍 정의 (플레이어-적, 플레이어-총알, 적-총알, 플레이어-아이템)
 	static const std::pair<GameObjectType, GameObjectType> collisionPairs[] =
 	{
 		{ GameObjectType::PLAYER, GameObjectType::ENEMY },
 		{ GameObjectType::PLAYER, GameObjectType::BULLET },
-		{ GameObjectType::ENEMY, GameObjectType::BULLET }
+		{ GameObjectType::ENEMY, GameObjectType::BULLET },
+		{ GameObjectType::PLAYER, GameObjectType::ITEM }
 	};
 
 	for (size_t i = 0; i < m_objects.size(); ++i)
@@ -152,8 +153,8 @@ void GameWorld::HandleInput(float deltaTime)
 	HandleFire(deltaTime);
 
 	// S키를 누르면 이동 속도가 절반으로 감소, 떼면 원래대로
-	if (KeyDown(0x53))	m_player->SetSpeed(150.f);
-	if (KeyUp(0x53))		m_player->SetSpeed(300.f);
+	if (KeyDown(0x53))	m_player->SetSpeed(m_player->GetBaseSpeed() / 2);
+	if (KeyUp(0x53))		m_player->SetSpeed(m_player->GetBaseSpeed());
 }
 
 bool GameWorld::KeyDown(int keyCode)
@@ -174,15 +175,19 @@ void GameWorld::HandleFire(float deltaTime)
 
 	if (KeyDown(0x41) && fireTimer > 0.1f)
 	{
-		Bullet* bullet = new Bullet(
-			m_player->GetX() + m_player->GetWidth() / 2 - 4,
-			m_player->GetY() - 18,
-			600.f,
-			damage,
-			BulletType::PLAYERBULLET
-		);
-		bullet->SetDamage(m_player->GetDamage());
-		m_objects.push_back(bullet);
+		for (int i = 0; i < m_player->GetNumberOfBullets(); ++i)
+		{
+			float offsetX = (i - m_player->GetNumberOfBullets() / 2.f + 0.5f) * 10.f;
+			Bullet* bullet = new Bullet(
+				m_player->GetX() + m_player->GetSrcWidth() / 2 - 4 + offsetX,
+				m_player->GetY() - 18,
+				600.f,
+				damage,
+				BulletType::PLAYERBULLET
+			);
+			bullet->SetDamage(m_player->GetDamage());
+			m_objects.push_back(bullet);
+		}
 
 		fireTimer = 0.f;
 	}

@@ -62,6 +62,9 @@
     <ClCompile Include="BulletPattern.cpp">
       <Filter>소스 파일\Component</Filter>
     </ClCompile>
+    <ClCompile Include="Item.cpp">
+      <Filter>소스 파일\Object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoxCollider.h">
@@ -120,6 +123,9 @@
     </ClInclude>
     <ClInclude Include="EnemyType.h">
       <Filter>소스 파일\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Item.h">
+      <Filter>소스 파일\Object</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

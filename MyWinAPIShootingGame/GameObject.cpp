@@ -9,8 +9,10 @@ GameObject::GameObject()
 	m_fX = 0.f;
 	m_fY = 0.f;
 	m_fSpeed = 0.f;
-	m_nWidth = 0;
-	m_nHeight = 0;
+	m_nSrcWidth = 0;
+	m_nSrcHeight = 0;
+	m_nRenderWidth = 0;
+	m_nRenderHeight = 0;
 	m_nHealth = 0;
 	m_nDamage = 0;
 	m_collider = nullptr;
@@ -26,8 +28,8 @@ RECT GameObject::GetAABB() const
 	return {
 		static_cast<LONG>(GetX()),
 		static_cast<LONG>(GetY()),
-		static_cast<LONG>(GetX() + static_cast<float>(GetWidth())),
-		static_cast<LONG>(GetY() + static_cast<float>(GetHeight()))
+		static_cast<LONG>(GetX() + static_cast<float>(GetRenderWidth())),
+		static_cast<LONG>(GetY() + static_cast<float>(GetRenderHeight()))
 	};
 }
 
