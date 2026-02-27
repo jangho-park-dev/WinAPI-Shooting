@@ -5,7 +5,14 @@ Bullet::Bullet(float x, float y, float speed, int damage, BulletType bulletType)
 	: m_bulletType(bulletType)
 {
 	m_bulletSprite = ResourceManager::GetInstance().GetSprite(SpriteID::SPRITE_BULLET);
-	m_bulletSprite->SetSpriteSizeMultiplier(1.3f);
+
+	if (m_bulletType == BulletType::MOTHERSHIPBULLET)
+		m_bulletSprite->SetSpriteSizeMultiplier(2.3f);
+	else if (m_bulletType == BulletType::DRAGONBULLET)
+		m_bulletSprite->SetSpriteSizeMultiplier(2.f);
+	else
+		m_bulletSprite->SetSpriteSizeMultiplier(1.3f);
+	
 	SetType(GameObjectType::BULLET);
 	SetLayer(GameObjectLayer::BULLET_LAYER);
 	SetActive(true);

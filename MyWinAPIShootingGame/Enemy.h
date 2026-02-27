@@ -35,12 +35,13 @@ struct EnemyBehavior
 class Enemy : public GameObject
 {
 private:
-	Sprite* m_sprite;
+	Sprite* m_enemySprite;
 	EnemyType m_enemyType;
 	EnemyState m_state;
 	EnemyBehavior m_behavior;
 
-	int m_nSrcX;							// 스프라이트 시트에서의 X 좌표(Goons만 랜덤값)
+	int m_nSrcX;
+	int m_nSrcY;
 
 	GameWorld* m_gameWorld;
 
@@ -57,6 +58,7 @@ public:
 	void Update(RECT& client, float deltaTime) override;
 	void Render(Renderer& renderer) override;
 	void OnCollision(GameObject& other) override;
+	void SetMothershipSpriteByHealth();
 	void OnDeath();
 
 	void SetSprite();
@@ -75,7 +77,7 @@ public:
 	void GoonsFire();
 	void MothershipSpawn(float deltaTime);
 	void MothershipAttack(float deltaTime);
-	void MothershipFire();
+	void MothershipAimShot();
 	void DragonAttack(float deltaTime);
 	void DragonSpawn(float deltaTime);
 	void DragonFire();

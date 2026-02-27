@@ -19,6 +19,7 @@ Enemy::Enemy(float x, float y, float speed, EnemyType type, GameWorld* gameWorld
 	SetCollider(new BoxCollider(this));
 
 	m_nSrcX = 0;
+	m_nSrcY = 0;
 
 	SetBehavior();
 }
@@ -78,13 +79,13 @@ void Enemy::SetBehavior()
 	break;
 	case EnemyType::MOTHERSHIP:
 	{
-		// 0.2초 간격으로 발사, 5발 발사 후 3초 휴식
+		// 0.2초 간격으로 발사, 7발 발사 후 2초 휴식
 		m_behavior.nBurstCount = 0;
-		m_behavior.nBurstMax = 5;
+		m_behavior.nBurstMax = 7;
 		m_behavior.fBurstTimer = 0.f;
 		m_behavior.fBurstInterval = 0.2f;
 		m_behavior.fRestTimer = 0.f;
-		m_behavior.fRestInterval = 3.f;
+		m_behavior.fRestInterval = 2.f;
 		m_behavior.bResting = false;
 		// 회전샷 초기 각도
 		m_behavior.fRotateAngle = 30.f;
@@ -95,7 +96,7 @@ void Enemy::SetBehavior()
 		// 사인 곡선 이동 진폭
 		m_behavior.fSineMoveAmplitude = 0.f;
 		SetDamage(10);
-		SetHealth(600);
+		SetHealth(1000);
 	}
 	break;
 	case EnemyType::DRAGON:
@@ -117,7 +118,7 @@ void Enemy::SetBehavior()
 		// 사인 곡선 이동 진폭
 		m_behavior.fSineMoveAmplitude = 0.f;
 		SetDamage(10);
-		SetHealth(3000);
+		SetHealth(15000);
 	}
 	break;
 	}
@@ -128,20 +129,20 @@ void Enemy::SetSprite()
 	switch (m_enemyType)
 	{
 	case EnemyType::MONSTER:
-		m_sprite = ResourceManager::GetInstance().GetSprite(SpriteID::SPRITE_MONSTER);
-		m_sprite->SetSpriteSizeMultiplier(1.f);
+		m_enemySprite = ResourceManager::GetInstance().GetSprite(SpriteID::SPRITE_MONSTER);
+		m_enemySprite->SetSpriteSizeMultiplier(1.f);
 		break;
 	case EnemyType::MOTHERSHIP:
-		m_sprite = ResourceManager::GetInstance().GetSprite(SpriteID::SPRITE_MOTHERSHIP);
-		m_sprite->SetSpriteSizeMultiplier(1.f);
+		m_enemySprite = ResourceManager::GetInstance().GetSprite(SpriteID::SPRITE_MOTHERSHIP);
+		m_enemySprite->SetSpriteSizeMultiplier(1.f);
 		break;
 	case EnemyType::DRAGON:
-		m_sprite = ResourceManager::GetInstance().GetSprite(SpriteID::SPRITE_DRAGON);
-		m_sprite->SetSpriteSizeMultiplier(1.f);
+		m_enemySprite = ResourceManager::GetInstance().GetSprite(SpriteID::SPRITE_DRAGON);
+		m_enemySprite->SetSpriteSizeMultiplier(1.f);
 		break;
 	case EnemyType::GOONS:
-		m_sprite = ResourceManager::GetInstance().GetSprite(SpriteID::SPRITE_GOONS);
-		m_sprite->SetSpriteSizeMultiplier(1.2f);
+		m_enemySprite = ResourceManager::GetInstance().GetSprite(SpriteID::SPRITE_GOONS);
+		m_enemySprite->SetSpriteSizeMultiplier(1.2f);
 		break;
 	}
 }
@@ -151,16 +152,16 @@ void Enemy::SetWH()
 	switch (m_enemyType)
 	{
 	case EnemyType::MONSTER:
-		SetSrcWidth(m_sprite->GetWidth());
-		SetSrcHeight(m_sprite->GetHeight());
+		SetSrcWidth(m_enemySprite->GetWidth());
+		SetSrcHeight(m_enemySprite->GetHeight());
 		break;
 	case EnemyType::MOTHERSHIP:
 		SetSrcWidth(240);
 		SetSrcHeight(128);
 		break;
 	case EnemyType::DRAGON:
-		SetSrcWidth(m_sprite->GetWidth());
-		SetSrcHeight(m_sprite->GetHeight());
+		SetSrcWidth(m_enemySprite->GetWidth());
+		SetSrcHeight(m_enemySprite->GetHeight());
 		break;
 	case EnemyType::GOONS:
 		SetSrcWidth(18);
@@ -169,8 +170,8 @@ void Enemy::SetWH()
 	}
 
 	SetRenderSize(
-		static_cast<int>(GetSrcWidth() * m_sprite->GetSpriteSizeMultiplier()),
-		static_cast<int>(GetSrcHeight() * m_sprite->GetSpriteSizeMultiplier())
+		static_cast<int>(GetSrcWidth() * m_enemySprite->GetSpriteSizeMultiplier()),
+		static_cast<int>(GetSrcHeight() * m_enemySprite->GetSpriteSizeMultiplier())
 	);
 }
 
@@ -186,7 +187,6 @@ void Enemy::Update(RECT& client, float deltaTime)
 
 }
 
-
 void Enemy::Render(Renderer& renderer)
 {
 	if (!IsActive())	return;
@@ -194,29 +194,63 @@ void Enemy::Render(Renderer& renderer)
 	int drawX = static_cast<int>(GetX() + 0.5f);
 	int drawY = static_cast<int>(GetY() + 0.5f);
 
-	if (m_enemyType == EnemyType::GOONS)
+	if (m_enemyType == EnemyType::GOONS ||
+		m_enemyType == EnemyType::MOTHERSHIP)
 		renderer.DrawSprite(
-			*m_sprite,
+			*m_enemySprite,
 			drawX, drawY,
-			m_nSrcX, 0,
+			m_nSrcX, m_nSrcY,
 			GetSrcWidth(), GetSrcHeight(),
 			GetRenderWidth(), GetRenderHeight()
 		);
 	else
 	{
 		renderer.DrawSprite(
-			*m_sprite,
+			*m_enemySprite,
 			drawX, drawY
 		);
 	}
-		
 }
 
 void Enemy::OnCollision(GameObject& other)
 {
 	if (!IsActive())	return;
 
+	SetMothershipSpriteByHealth();
 	// TODO : 피격 사운드
+}
+
+void Enemy::SetMothershipSpriteByHealth()
+{
+	// TODO : 하드코딩 제거
+	if (m_enemyType == EnemyType::MOTHERSHIP)
+	{
+		if (900 < GetHealth() && GetHealth() <= 1000)
+		{
+			m_nSrcX = 0;
+			m_nSrcY = 0;
+		}
+		else if (800 < GetHealth() && GetHealth() <= 900)
+		{
+			m_nSrcX = 240;
+			m_nSrcY = 0;
+		}
+		else if (600 < GetHealth() && GetHealth() <= 800)
+		{
+			m_nSrcX = 480;
+			m_nSrcY = 0;
+		}
+		else if (300 < GetHealth() && GetHealth() <= 600)
+		{
+			m_nSrcX = 0;
+			m_nSrcY = 128;
+		}
+		else if (0 < GetHealth() && GetHealth() <= 300)
+		{
+			m_nSrcX = 240;
+			m_nSrcY = 128;
+		}
+	}
 }
 
 void Enemy::OnDeath()
@@ -396,12 +430,62 @@ void Enemy::MothershipSpawn(float deltaTime)
 
 void Enemy::MothershipAttack(float deltaTime)
 {
+	if (m_behavior.bResting)
+	{
+		m_behavior.fRestTimer += deltaTime;
+		if (m_behavior.fRestTimer >= m_behavior.fRestInterval)
+		{
+			m_behavior.fRestTimer = 0.f;
+			m_behavior.nBurstCount = 0;
+			m_behavior.bResting = false;
+		}
+		return;
+	}
 
+	m_behavior.fBurstTimer += deltaTime;
+	if (m_behavior.fBurstTimer >= m_behavior.fBurstInterval)
+	{
+		m_behavior.fBurstTimer = 0.f;
+		MothershipAimShot();
+
+
+		++m_behavior.nBurstCount;
+		if (m_behavior.nBurstCount >= m_behavior.nBurstMax)	m_behavior.bResting = true;
+	}
 }
 
-void Enemy::MothershipFire()
+void Enemy::MothershipAimShot()
 {
+	static std::vector<std::pair<float, float>> msArmsOffset;
+	msArmsOffset =
+	{
+		// 좌측
+		{33.f, 61.f},
+		{64.f, 81.f},
+		{94.f, 98.f},
+		// 우측
+		{146.f, 97.f},
+		{177.f, 79.f},
+		{207.f, 60.f}
+	};
 
+	float targetX = m_gameWorld->GetPlayer()->GetX() + m_gameWorld->GetPlayer()->GetRenderWidth() / 2.f;
+	float targetY = m_gameWorld->GetPlayer()->GetY() + m_gameWorld->GetPlayer()->GetRenderHeight() / 2.f;
+
+	int damage = GetDamage();
+
+	// 조준샷
+	for (auto arm : msArmsOffset)
+	{
+		BulletPattern::AimShot(
+			m_gameWorld,
+			GetX() + arm.first, GetY() + arm.second,
+			targetX, targetY,
+			800.f,
+			damage,
+			BulletType::MOTHERSHIPBULLET
+		);
+	}
 }
 
 void Enemy::DragonSpawn(float deltaTime)
