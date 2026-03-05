@@ -65,6 +65,9 @@
     <ClCompile Include="Item.cpp">
       <Filter>소스 파일\Object</Filter>
     </ClCompile>
+    <ClCompile Include="Effect.cpp">
+      <Filter>소스 파일\Object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoxCollider.h">
@@ -125,6 +128,9 @@
       <Filter>소스 파일\Framework</Filter>
     </ClInclude>
     <ClInclude Include="Item.h">
+      <Filter>소스 파일\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect.h">
       <Filter>소스 파일\Object</Filter>
     </ClInclude>
   </ItemGroup>

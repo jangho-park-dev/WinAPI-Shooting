@@ -36,6 +36,11 @@ public:
 		int width = -1, int height = -1,
 		int destWidth = -1, int destHeight = -1
 	);
+	void DrawLine(
+		int x1, int y1,
+		int x2, int y2,
+		COLORREF color
+	);
 
 };
 

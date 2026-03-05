@@ -24,7 +24,7 @@ public:
 		SetRenderSize(GetSrcWidth(), GetSrcHeight());
 	}
 	
-	void Render(Renderer& renderer)
+	void Render(Renderer& renderer) override
 	{
 		renderer.DrawSprite(*m_backgroundSprite, static_cast<int>(GetX()), static_cast<int>(GetY()));
 	}

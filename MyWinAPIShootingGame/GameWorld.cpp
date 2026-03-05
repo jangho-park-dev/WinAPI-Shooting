@@ -20,7 +20,7 @@ GameWorld::~GameWorld()
 
 void GameWorld::Initialize()
 {
-	m_player = new Player();
+	m_player = new Player(this);
 	m_objects.push_back(new Background());
 	m_objects.push_back(m_player);
 

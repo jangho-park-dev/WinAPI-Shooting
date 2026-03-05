@@ -92,6 +92,22 @@ void Renderer::DrawSprite(
 	DeleteDC(hSrcDC);
 }
 
+void Renderer::DrawLine(
+	int x1, int y1,
+	int x2, int y2,
+	COLORREF color
+)
+{
+	HPEN hPen = CreatePen(PS_SOLID, 1, color);
+	HPEN hOldPen = (HPEN)SelectObject(m_hMemDC, hPen);
+
+	MoveToEx(m_hMemDC, x1, y1, nullptr);
+	LineTo(m_hMemDC, x2, y2);
+
+	SelectObject(m_hMemDC, hOldPen);
+	DeleteObject(hPen);
+}
+
 void Renderer::BeginRender()
 {
 	// 백버퍼 검은색으로 밀기

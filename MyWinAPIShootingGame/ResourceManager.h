@@ -14,6 +14,8 @@ enum class SpriteID
 	SPRITE_DRAGON,
 	SPRITE_GOONS,
 	SPRITE_ITEM,
+	SPRITE_PLAYERBULLETEFFECT,
+	SPRITE_ENEMYBULLETEFFECT,
 };
 
 struct SpriteEntry
@@ -96,6 +98,20 @@ public:
 		m_sprites.push_back(SpriteEntry{
 			SpriteID::SPRITE_ITEM,
 			new Sprite(L"GameAssets/VULCAN-Powerup_Sheet.bmp", true, RGB(255, 0, 255))
+			}
+		);
+
+		// playerBulletCollisionEffect sprite
+		m_sprites.push_back(SpriteEntry{
+			SpriteID::SPRITE_PLAYERBULLETEFFECT,
+			new Sprite(L"GameAssets/playerBulletCollisionEffect.bmp", true, RGB(255, 0, 255))
+			}
+		);
+
+		// enemyBulletCollisionEffect sprite
+		m_sprites.push_back(SpriteEntry{
+			SpriteID::SPRITE_ENEMYBULLETEFFECT,
+			new Sprite(L"GameAssets/enemyBulletCollisionEffect.bmp", true, RGB(255, 0, 255))
 			}
 		);
 	}

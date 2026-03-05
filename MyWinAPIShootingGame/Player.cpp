@@ -2,7 +2,8 @@
 #include "Player.h"
 #include "Item.h"
 
-Player::Player(float x, float y, float speed)
+Player::Player(GameWorld* gameWorld, float x, float y, float speed)
+	: m_gameWorld(gameWorld)
 {
 	m_playerSprite = ResourceManager::GetInstance().GetSprite(SpriteID::SPRITE_PLAYER);
 	m_playerTrailSprite = ResourceManager::GetInstance().GetSprite(SpriteID::SPRITE_PLAYERTRAIL);
@@ -178,6 +179,21 @@ void Player::OnCollision(GameObject& other)
 		}
 		break;
 		}
+	}
+
+	
+	if (other.GetType() == GameObjectType::BULLET)
+	{
+		auto otherBulletType = dynamic_cast<Bullet&>(other).GetBulletType();
+		if (otherBulletType == BulletType::GOONSBULLET ||
+			otherBulletType == BulletType::MONSTERBULLET ||
+			otherBulletType == BulletType::MOTHERSHIPBULLET ||
+			otherBulletType == BulletType::DRAGONBULLET)
+			m_gameWorld->AddObject(new Effect(
+				other.GetX() - (32 - other.GetSrcWidth() / 2),		// 32 -> 이펙트 크기 절반 하드코딩
+				other.GetY() - (32 - other.GetSrcHeight() / 2),
+				otherBulletType
+			));
 	}
 }
 

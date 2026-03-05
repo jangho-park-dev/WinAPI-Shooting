@@ -98,6 +98,9 @@ void Bullet::OnCollision(GameObject& other)
 	if (m_bulletType == BulletType::PLAYERBULLET && other.GetType() == GameObjectType::PLAYER) return;
 	if (m_bulletType != BulletType::PLAYERBULLET && other.GetType() == GameObjectType::ENEMY) return;
 
+
+	
+
 	other.SetHealth(other.GetHealth() - GetDamage());
 	if (other.GetHealth() <= 0)
 	{

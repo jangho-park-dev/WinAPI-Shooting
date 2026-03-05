@@ -1,9 +1,11 @@
 #pragma once
+#include "GameWorld.h"
 #include "ResourceManager.h"
 #include "GameObject.h"
 #include "Renderer.h"
 #include "Bullet.h"
 #include "BoxCollider.h"
+#include "Effect.h"
 
 enum class Keystates
 {
@@ -47,8 +49,10 @@ private:
 	int m_nNumberOfBullets;
 	float m_fBaseSpeed;
 
+	GameWorld* m_gameWorld;
+
 public:
-	Player(float x = 240, float y = 600, float speed = 300);
+	Player(GameWorld* gameWorld, float x = 240, float y = 600, float speed = 300);
 	~Player() {};
 	void Update(RECT& client, float deltaTime) override;
 	void Render(Renderer& renderer) override;

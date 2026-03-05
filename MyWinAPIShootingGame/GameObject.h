@@ -10,7 +10,8 @@ enum class GameObjectType
 	PLAYER,
 	ENEMY,
 	ITEM,
-	BULLET
+	BULLET,
+	EFFECT,
 };
 
 enum class GameObjectLayer
@@ -21,7 +22,8 @@ enum class GameObjectLayer
 	ENEMY_LAYER,
 	ITEM_LAYER,
 	BULLET_LAYER,
-	UI_LAYER
+	EFFECT_LAYER,
+	UI_LAYER,
 };
 
 class GameObject
