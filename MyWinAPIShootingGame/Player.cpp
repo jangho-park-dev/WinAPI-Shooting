@@ -184,6 +184,7 @@ void Player::OnCollision(GameObject& other)
 	
 	if (other.GetType() == GameObjectType::BULLET)
 	{
+		ResourceManager::GetInstance().RPlaySound(SoundID::SOUND_PLAYER_HIT, 0.01f);
 		auto otherBulletType = dynamic_cast<Bullet&>(other).GetBulletType();
 		if (otherBulletType == BulletType::GOONSBULLET ||
 			otherBulletType == BulletType::MONSTERBULLET ||

@@ -51,9 +51,9 @@ public:
 		}
 
 		// 반복문은 파일 개수만큼 반복
-		for (int i = 0; i <= fileCount; ++i)
+		for (int i = 0; i < fileCount; ++i)
 		{
-			std::string path = basePath + std::to_string(i) + extension;
+			std::string path = basePath + std::to_string(i + 1) + extension;
 			LoadWavesFromFile(path, waves);
 		}
 

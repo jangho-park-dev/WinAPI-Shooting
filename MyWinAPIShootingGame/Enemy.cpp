@@ -236,11 +236,14 @@ void Enemy::OnCollision(GameObject& other)
 	// TODO : 피격 처리
 	if (other.GetType() == GameObjectType::BULLET &&
 		dynamic_cast<Bullet&>(other).GetBulletType() == BulletType::PLAYERBULLET)
+	{
+		ResourceManager::GetInstance().RPlaySound(SoundID::SOUND_ENEMY_HIT, 0.01f);
 		m_gameWorld->AddObject(new Effect(
 			other.GetX() - (32 - other.GetSrcWidth() / 2),		// 32 -> 이펙트 크기 절반 하드코딩
 			other.GetY() - (32 - other.GetSrcHeight() / 2),
 			BulletType::PLAYERBULLET
 		));
+	}
 }
 
 void Enemy::SetMothershipSpriteByHealth()
@@ -276,6 +279,8 @@ void Enemy::SetMothershipSpriteByHealth()
 
 void Enemy::OnDeath()
 {
+	ResourceManager::GetInstance().RPlaySound(SoundID::SOUND_ENEMY_DEATH, 0.01f);
+
 	ItemType dropType = ItemType::SPEEDUP;
 	switch (rand() % 4)
 	{

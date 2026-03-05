@@ -9,6 +9,8 @@ GameWorld::GameWorld()
 {
 	m_nCurrentWave = 0;
 	m_fWaveTimer = 0.f;
+
+	ResourceManager::GetInstance().RPlaySound(SoundID::SOUND_BGM, 0.03f, true);
 }
 
 GameWorld::~GameWorld()
@@ -175,6 +177,8 @@ void GameWorld::HandleFire(float deltaTime)
 
 	if (KeyDown(0x41) && fireTimer > 0.1f)
 	{
+		ResourceManager::GetInstance().RPlaySound(SoundID::SOUND_PLAYER_SHOOT, 0.01f);
+
 		for (int i = 0; i < m_player->GetNumberOfBullets(); ++i)
 		{
 			float offsetX = (i - m_player->GetNumberOfBullets() / 2.f + 0.5f) * 10.f;

@@ -57,7 +57,11 @@ void Item::Render(Renderer& renderer)
 
 void Item::OnCollision(GameObject& other)
 {
-	if (other.GetType() == GameObjectType::PLAYER)	SetActive(false);
+	if (other.GetType() == GameObjectType::PLAYER)
+	{
+		ResourceManager::GetInstance().RPlaySound(SoundID::SOUND_ITEM_PICKUP, 0.01f);
+		SetActive(false);
+	}
 }
 
 void Item::SpriteAnimation(float deltaTime)
