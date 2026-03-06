@@ -3,14 +3,18 @@
 #include "Enemy.h"
 #include "Collider.h"
 #include "Background.h"
+#include "GameOverScene.h"
 
 GameWorld::GameWorld(SceneManager* sceneManager)
 	: m_player(nullptr)
 	, m_nCurrentWave(0)
 	, m_fWaveTimer(0.f)
 	, m_sceneManager(sceneManager)
+	, m_nEnemyKilled(0)
+	, m_fSurvivalTime(0.f)
+	, m_bGameOver(false)
 {
-	//ResourceManager::GetInstance().RPlaySound(SoundID::SOUND_BGM, 0.03f, true);
+
 }
 
 GameWorld::~GameWorld()
@@ -36,6 +40,8 @@ void GameWorld::AddObject(GameObject* object)
 
 void GameWorld::Update(RECT& client, float deltaTime)
 {
+	m_fSurvivalTime += deltaTime;
+
 	UpdateWave(deltaTime);
 
 	for (auto obj : m_objects)
@@ -76,18 +82,18 @@ void GameWorld::CheckCollisions()
 	{
 		for (size_t j = i + 1; j < m_objects.size(); ++j)
 		{
-			GameObject* a = m_objects[i];
-			GameObject* b = m_objects[j];
+			GameObject* alpha = m_objects[i];
+			GameObject* beta = m_objects[j];
 
-			if (!a->IsActive() || !b->IsActive())			continue;
-			if (!a->GetCollider() || !b->GetCollider())	continue;
+			if (!alpha->IsActive() || !beta->IsActive())			continue;
+			if (!alpha->GetCollider() || !beta->GetCollider())	continue;
 
 			bool validPair = false;
 
 			for (auto& pair : collisionPairs)
 			{
-				if ((a->GetType() == pair.first && b->GetType() == pair.second) ||
-					(a->GetType() == pair.second && b->GetType() == pair.first))
+				if ((alpha->GetType() == pair.first && beta->GetType() == pair.second) ||
+					(alpha->GetType() == pair.second && beta->GetType() == pair.first))
 				{
 					validPair = true;
 					break;
@@ -96,10 +102,10 @@ void GameWorld::CheckCollisions()
 
 			if (!validPair)	continue;
 
-			if (a->GetCollider()->CheckCollision(*b->GetCollider()))
+			if (alpha->GetCollider()->CheckCollision(*beta->GetCollider()))
 			{
-				a->OnCollision(*b);
-				b->OnCollision(*a);
+				alpha->OnCollision(*beta);
+				beta->OnCollision(*alpha);
 			}
 		}
 	}
@@ -120,10 +126,12 @@ void GameWorld::RemoveInactiveObjects()
 	auto it = std::remove_if(
 		m_objects.begin(),
 		m_objects.end(),
-		[](GameObject* obj)
+		[this](GameObject* obj)
 		{
 			if (!obj->IsActive())
 			{
+				if (obj->GetType() == GameObjectType::ENEMY)	++m_nEnemyKilled;
+
 				delete obj;
 				obj = nullptr;
 				return true;   // 제거 대상
@@ -146,10 +154,10 @@ void GameWorld::ProcessSpawnQueue()
 
 void GameWorld::HandleInput(float deltaTime)
 {
-	m_player->SetDirection(Keystates::LEFT, KeyDown(VK_LEFT));
-	m_player->SetDirection(Keystates::RIGHT, KeyDown(VK_RIGHT));
-	m_player->SetDirection(Keystates::UP, KeyDown(VK_UP));
-	m_player->SetDirection(Keystates::DOWN, KeyDown(VK_DOWN));
+	m_player->SetDirection(Keystates::LEFT,	KeyDown(VK_LEFT));
+	m_player->SetDirection(Keystates::RIGHT,	KeyDown(VK_RIGHT));
+	m_player->SetDirection(Keystates::UP,		KeyDown(VK_UP));
+	m_player->SetDirection(Keystates::DOWN,	KeyDown(VK_DOWN));
 
 	HandleFire(deltaTime);
 
@@ -172,15 +180,16 @@ void GameWorld::HandleFire(float deltaTime)
 {
 	static float fireTimer = 0.f;
 	fireTimer += deltaTime;
-	int damage = m_player->GetDamage();
 
 	if (KeyDown(0x41) && fireTimer > 0.1f)
 	{
 		ResourceManager::GetInstance().RPlaySound(SoundID::SOUND_PLAYER_SHOOT, 0.01f);
 
-		for (int i = 0; i < m_player->GetNumberOfBullets(); ++i)
+		int damage = m_player->GetDamage();
+		int bulletNums = m_player->GetNumberOfBullets();
+		for (int i = 0; i < bulletNums; ++i)
 		{
-			float offsetX = (i - m_player->GetNumberOfBullets() / 2.f + 0.5f) * 10.f;
+			float offsetX = (i - bulletNums / 2.f + 0.5f) * 10.f;
 			Bullet* bullet = new Bullet(
 				m_player->GetX() + m_player->GetSrcWidth() / 2 - 4 + offsetX,
 				m_player->GetY() - 18,
@@ -206,11 +215,12 @@ void GameWorld::UpdateWave(float deltaTime)
 	{
 		if (!event.spawned && m_fWaveTimer >= event.spawnTime)
 		{
-			Enemy* enemy = new Enemy(
-				event.x, event.y, event.speed,
-				event.enemyType, this
+			AddObject(new Enemy(
+				event.x, event.y,
+				event.speed,
+				event.enemyType,
+				this)
 			);
-			AddObject(enemy);
 			event.spawned = true;
 		}
 	}
@@ -229,4 +239,5 @@ void GameWorld::CheckWaveCleared()
 	std::cout << "Wave " << m_nCurrentWave + 1 << " cleared!" << std::endl;
 	++m_nCurrentWave;
 	m_fWaveTimer = 0.f;
+
 }

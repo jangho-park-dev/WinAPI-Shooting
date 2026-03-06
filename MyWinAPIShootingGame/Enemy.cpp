@@ -102,7 +102,7 @@ void Enemy::SetBehavior()
 		m_behavior.fLaserBurstTimer = 0.f;
 		m_behavior.fLaserBurstInterval = 0.f;
 		SetDamage(10);
-		SetHealth(1000);
+		SetHealth(10000);
 	}
 	break;
 	case EnemyType::DRAGON:
@@ -233,7 +233,6 @@ void Enemy::OnCollision(GameObject& other)
 
 	SetMothershipSpriteByHealth();
 
-	// TODO : 피격 처리
 	if (other.GetType() == GameObjectType::BULLET &&
 		dynamic_cast<Bullet&>(other).GetBulletType() == BulletType::PLAYERBULLET)
 	{
@@ -250,27 +249,27 @@ void Enemy::SetMothershipSpriteByHealth()
 {
 	if (m_enemyType != EnemyType::MOTHERSHIP)	return;
 
-	if (900 < GetHealth() && GetHealth() <= 1000)
+	if (8000 < GetHealth() && GetHealth() <= 10000)
 	{
 		m_nSrcX = 0;
 		m_nSrcY = 0;
 	}
-	else if (800 < GetHealth() && GetHealth() <= 900)
+	else if (6000 < GetHealth() && GetHealth() <= 8000)
 	{
 		m_nSrcX = 240;
 		m_nSrcY = 0;
 	}
-	else if (600 < GetHealth() && GetHealth() <= 800)
+	else if (4000 < GetHealth() && GetHealth() <= 6000)
 	{
 		m_nSrcX = 480;
 		m_nSrcY = 0;
 	}
-	else if (300 < GetHealth() && GetHealth() <= 600)
+	else if (2000 < GetHealth() && GetHealth() <= 4000)
 	{
 		m_nSrcX = 0;
 		m_nSrcY = 128;
 	}
-	else if (0 < GetHealth() && GetHealth() <= 300)
+	else if (0 < GetHealth() && GetHealth() <= 2000)
 	{
 		m_nSrcX = 240;
 		m_nSrcY = 128;
@@ -279,7 +278,7 @@ void Enemy::SetMothershipSpriteByHealth()
 
 void Enemy::OnDeath()
 {
-	ResourceManager::GetInstance().RPlaySound(SoundID::SOUND_ENEMY_DEATH, 0.01f);
+	ResourceManager::GetInstance().RPlaySound(SoundID::SOUND_ENEMY_DEATH, 0.02f);
 
 	ItemType dropType = ItemType::SPEEDUP;
 	switch (rand() % 4)
@@ -448,8 +447,8 @@ void Enemy::MothershipSpawn(float deltaTime)
 void Enemy::MothershipMove(float deltaTime, float screenWidth)
 {
 	float moveSpeed = 80.f;
-	if (GetHealth() <= 300)		moveSpeed = 200.f;
-	else if (GetHealth() <= 600)	moveSpeed = 130.f;
+	if (GetHealth() <= 2000)		moveSpeed = 200.f;
+	else if (GetHealth() <= 4000)	moveSpeed = 130.f;
 
 	SetX(GetX() + moveSpeed * m_fMoveDir * deltaTime);
 
@@ -515,9 +514,9 @@ void Enemy::MothershipAimShot()
 	float targetX = m_gameWorld->GetPlayer()->GetX() + m_gameWorld->GetPlayer()->GetRenderWidth() / 2.f;
 	float targetY = m_gameWorld->GetPlayer()->GetY() + m_gameWorld->GetPlayer()->GetRenderHeight() / 2.f;
 
-	float bulletSpeed = 800.f;
-	if (GetHealth() <= 300)		bulletSpeed = 1100.f;
-	else if (GetHealth() <= 600)	bulletSpeed = 950.f;
+	float bulletSpeed = 700.f;
+	if (GetHealth() <= 2000)		bulletSpeed = 1000.f;
+	else if (GetHealth() <= 4000)	bulletSpeed = 850.f;
 
 	for (auto& arm : msArmsOffset)
 	{
@@ -541,18 +540,8 @@ void Enemy::MothershipNWayShot()
 	float speed = 400.f;
 	float spread = 60.f;
 
-	if (GetHealth() <= 300)
-	{
-		nWay = 9;
-		speed = 600.f;
-		spread = 80.f;
-	}
-	else if (GetHealth() <= 600)
-	{
-		nWay = 7;
-		speed = 500.f;
-		spread = 70.f;
-	}
+	if (GetHealth() <= 2000)		{ nWay = 9; speed = 600.f; spread = 80.f; }
+	else if (GetHealth() <= 4000)	{ nWay = 7; speed = 500.f; spread = 70.f; }
 
 	BulletPattern::NWayShot(
 		m_gameWorld,

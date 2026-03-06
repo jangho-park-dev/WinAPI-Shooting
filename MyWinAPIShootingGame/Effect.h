@@ -2,8 +2,8 @@
 #include "GameObject.h"
 #include "ResourceManager.h"
 #include "Renderer.h"
+#include "Bullet.h"
 
-enum class BulletType;
 
 class Effect : public GameObject
 {
@@ -20,5 +20,7 @@ public:
 	void OnCollision(GameObject& other) override;
 	
 	void SpriteAnimation(float deltaTime);
+
+	static int GetEffectRenderSize(BulletType bulletType) { return (bulletType == BulletType::PLAYERBULLET) ? 64 : 38; }
 };
 

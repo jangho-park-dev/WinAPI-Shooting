@@ -24,7 +24,7 @@ Player::Player(GameWorld* gameWorld, float x, float y, float speed)
 		static_cast<int>(GetSrcWidth() * m_playerOutlineSprite->GetSpriteSizeMultiplier()),
 		static_cast<int>(GetSrcHeight() * m_playerOutlineSprite->GetSpriteSizeMultiplier())
 	);
-	SetHealth(100000);
+	SetHealth(100);
 	SetDamage(10);
 	SetCollider(new BoxCollider(this));
 
@@ -144,7 +144,6 @@ void Player::Render(Renderer& renderer)
 
 void Player::OnCollision(GameObject& other)
 {
-	// TODO : 피격 사운드
 	if (other.GetType() == GameObjectType::ITEM)
 	{
 		switch (dynamic_cast<Item*>(&other)->GetItemType())
@@ -184,18 +183,20 @@ void Player::OnCollision(GameObject& other)
 	
 	if (other.GetType() == GameObjectType::BULLET)
 	{
-		ResourceManager::GetInstance().RPlaySound(SoundID::SOUND_PLAYER_HIT, 0.01f);
+		ResourceManager::GetInstance().RPlaySound(SoundID::SOUND_PLAYER_HIT, 0.03f);
 		auto otherBulletType = dynamic_cast<Bullet&>(other).GetBulletType();
-		if (otherBulletType == BulletType::GOONSBULLET ||
-			otherBulletType == BulletType::MONSTERBULLET ||
-			otherBulletType == BulletType::MOTHERSHIPBULLET ||
-			otherBulletType == BulletType::DRAGONBULLET)
-			m_gameWorld->AddObject(new Effect(
-				other.GetX() - (32 - other.GetSrcWidth() / 2),		// 32 -> 이펙트 크기 절반 하드코딩
-				other.GetY() - (32 - other.GetSrcHeight() / 2),
-				otherBulletType
-			));
+		float half = Effect::GetEffectRenderSize(otherBulletType) / 2.f;
+		m_gameWorld->AddObject(new Effect(
+			other.GetX() + other.GetRenderWidth() / 2.f - half,
+			other.GetY() + other.GetRenderHeight() / 2.f - half,
+			otherBulletType)
+		);
 	}
+}
+
+void Player::OnDeath()
+{
+	m_gameWorld->SetGameOver();
 }
 
 void Player::SetDirection(Keystates key, bool tf)

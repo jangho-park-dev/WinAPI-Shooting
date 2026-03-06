@@ -2,10 +2,10 @@
 #include "GameScene.h"
 
 static const int BTN_Y = 550;
-static const int BTN_START_X = 200;
-static const int BTN_EXIT_X = 350;
-static const int BTN_W = 150;
-static const int BTN_H = 80;
+static const int BTN_START_X = 0;
+static const int BTN_EXIT_X = 150;
+static const int BTN_W = 200;
+static const int BTN_H = 100;
 
 TitleScene::TitleScene(SceneManager* sceneManager, HWND hWnd)
 	: m_sceneManager(sceneManager)
@@ -26,8 +26,7 @@ TitleScene::~TitleScene()
 
 void TitleScene::Initialize()
 {
-	// TODO : title bgm
-	//ResourceManager::GetInstance().RPlaySound(SoundID::SOUND_TITLE_BGM, true);
+	ResourceManager::GetInstance().RPlaySound(SoundID::SOUND_TITLE_BGM, 0.05f, true);
 	m_background = new Background(SpriteID::SPRITE_TITLEBACKGROUND);
 	m_buttonStart = new Button(SpriteID::SPRITE_BTN_START, BTN_START_X, BTN_Y, BTN_W, BTN_H);
 	m_buttonExit = new Button(SpriteID::SPRITE_BTN_EXIT, BTN_EXIT_X, BTN_Y, BTN_W, BTN_H);
@@ -48,7 +47,10 @@ void TitleScene::Render(Renderer& renderer)
 void TitleScene::HandleInput(float deltaTime)
 {
 	if (m_buttonStart->IsClickedClient(m_hWnd))
+	{
 		m_sceneManager->ChangeScene(new GameScene(m_sceneManager, m_hWnd));
+		ResourceManager::GetInstance().RStopSound(SoundID::SOUND_TITLE_BGM);
+	}
 
 	if (m_buttonExit->IsClickedClient(m_hWnd))	PostQuitMessage(0);
 }

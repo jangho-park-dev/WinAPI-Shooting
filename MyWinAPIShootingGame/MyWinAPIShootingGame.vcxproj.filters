@@ -175,5 +175,8 @@
     <ClInclude Include="Button.h">
       <Filter>소스 파일\Component</Filter>
     </ClInclude>
+    <ClInclude Include="GameStats.h">
+      <Filter>소스 파일\Main</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

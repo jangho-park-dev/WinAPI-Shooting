@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "WaveLoader.h"	
 #include "SceneManager.h"
+#include "GameStats.h"
 #include <queue>
 
 class Renderer;
@@ -21,6 +22,12 @@ private:
 	float m_fWaveTimer;
 
 	SceneManager* m_sceneManager;
+
+	// Ελ°θ
+	int m_nEnemyKilled;
+	float m_fSurvivalTime;
+
+	bool m_bGameOver;
 
 public:
 	GameWorld(SceneManager* sceneManager = nullptr);
@@ -46,5 +53,14 @@ public:
 
 	Player* GetPlayer() const { return m_player; }
 	int GetCurrentWave() const { return m_nCurrentWave; }
+	bool IsAllWaveCleared() const { return m_nCurrentWave >= static_cast<int>(m_waves.size()); }
+
+	void AddEnemyKill() { ++m_nEnemyKilled; }
+
+	GameStats GetStats() const { return { m_nCurrentWave, m_nEnemyKilled, m_fSurvivalTime }; }
+
+	void SetGameOver() { m_bGameOver = true; }
+	bool IsGameOver() const { return m_bGameOver; }
+
 };
 

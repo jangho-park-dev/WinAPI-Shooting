@@ -19,14 +19,18 @@ void GameScene::Initialize()
 {
 	m_world = new GameWorld(m_sceneManager);
 	m_world->Initialize();
+	ResourceManager::GetInstance().RPlaySound(SoundID::SOUND_GAME_BGM, 0.05f, true);
 }
 
 void GameScene::Update(RECT& client, float deltaTime)
 {
 	m_world->Update(client, deltaTime);
 
-	if (!m_world->GetPlayer()->IsActive())
-		m_sceneManager->ChangeScene(new GameOverScene(m_sceneManager, m_hWnd));
+	if (m_world->IsGameOver() || m_world->IsAllWaveCleared())
+	{
+		m_sceneManager->ChangeScene(new GameOverScene(m_sceneManager, m_hWnd, m_world->GetStats()));
+		ResourceManager::GetInstance().RStopSound(SoundID::SOUND_GAME_BGM);
+	}
 }
 
 void GameScene::Render(Renderer& renderer)

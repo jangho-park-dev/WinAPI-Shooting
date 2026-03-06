@@ -59,7 +59,7 @@ void Item::OnCollision(GameObject& other)
 {
 	if (other.GetType() == GameObjectType::PLAYER)
 	{
-		ResourceManager::GetInstance().RPlaySound(SoundID::SOUND_ITEM_PICKUP, 0.01f);
+		ResourceManager::GetInstance().RPlaySound(SoundID::SOUND_ITEM_PICKUP, 0.04f);
 		SetActive(false);
 	}
 }

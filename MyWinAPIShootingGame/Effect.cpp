@@ -1,5 +1,4 @@
 #include "Effect.h"
-#include "Bullet.h"
 
 Effect::Effect(float x, float y, BulletType bulletType)
 {

@@ -108,6 +108,36 @@ void Renderer::DrawLine(
 	DeleteObject(hPen);
 }
 
+void Renderer::DrawString(
+	int x, int y,
+	const wchar_t* text,
+	COLORREF color,
+	int fontSize
+)
+{
+	HFONT hFont = CreateFont(
+		fontSize, 0, 0, 0,
+		FW_BOLD,
+		FALSE, FALSE, FALSE,
+		DEFAULT_CHARSET,
+		OUT_DEFAULT_PRECIS,
+		CLIP_DEFAULT_PRECIS,
+		DEFAULT_QUALITY,
+		DEFAULT_PITCH | FF_DONTCARE,
+		L"Arial"
+	);
+
+	HFONT hOldFont = (HFONT)SelectObject(m_hMemDC, hFont);
+
+	SetTextColor(m_hMemDC, color);
+	SetBkMode(m_hMemDC, TRANSPARENT);	// 배경 투명
+
+	::TextOut(m_hMemDC, x, y, text, static_cast<int>(wcslen(text)));
+
+	SelectObject(m_hMemDC, hOldFont);
+	DeleteObject(hFont);
+}
+
 void Renderer::BeginRender()
 {
 	// 백버퍼 검은색으로 밀기

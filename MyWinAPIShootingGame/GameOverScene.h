@@ -3,6 +3,7 @@
 #include "SceneManager.h"
 #include "Background.h"
 #include "Button.h"
+#include "GameStats.h"
 
 class GameOverScene : public Scene
 {
@@ -12,9 +13,10 @@ private:
 	Background*		m_background;
 	Button*				m_buttonHome;
 	Button*				m_buttonRestart;
+	GameStats			m_stats;
 	
 public:
-	GameOverScene(SceneManager* sceneManager, HWND hWnd);
+	GameOverScene(SceneManager* sceneManager, HWND hWnd, GameStats stats);
 	~GameOverScene();
 
 	void Initialize() override;

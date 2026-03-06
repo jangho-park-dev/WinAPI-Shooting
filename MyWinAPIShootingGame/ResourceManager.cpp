@@ -14,7 +14,7 @@ ResourceManager::ResourceManager()
 	// Background sprite
 	m_sprites.push_back(SpriteEntry{
 		SpriteID::SPRITE_GAMEBACKGROUND,
-		new Sprite(L"GameAssets/Background.bmp")
+		new Sprite(L"GameAssets/GameScene.bmp")
 		}
 	);
 
@@ -157,6 +157,29 @@ ResourceManager::~ResourceManager()
 {
 	for (auto& e : m_sprites)
 		delete e.sprite;
+
+	// 루프 중인 보이스 전부 정지 및 해제
+	for (auto& pair : m_loopVoices)
+	{
+		if (pair.second)
+		{
+			pair.second->Stop();
+			pair.second->DestroyVoice();
+		}
+	}
+	m_loopVoices.clear();
+
+	if (m_pMasterVoice)
+	{
+		m_pMasterVoice->DestroyVoice();
+		m_pMasterVoice = nullptr;
+	}
+	if (m_pXAudio2)
+	{
+		m_pXAudio2->Release();
+		m_pXAudio2 = nullptr;
+	}
+	CoUninitialize();
 }
 
 bool ResourceManager::LoadWAV(const wchar_t* path, SoundEntry& entry)

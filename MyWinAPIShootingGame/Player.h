@@ -57,6 +57,7 @@ public:
 	void Update(RECT& client, float deltaTime) override;
 	void Render(Renderer& renderer) override;
 	void OnCollision(GameObject& other) override;
+	void OnDeath() override;
 	
 	void Move(RECT& client, float deltaTime);
 	void UpdateTrails(float deltaTime);

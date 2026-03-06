@@ -16,12 +16,12 @@ struct MyRectF
 class Renderer
 {
 private:
-	HWND m_hWnd;
-	HDC m_hdc;					// 화면 DC
-	HDC m_hMemDC;			// 백버퍼 DC
-	HBITMAP m_hBackBitmap;
-	HBITMAP m_hOldBitmap;
-	RECT m_clientRect;
+	HWND		m_hWnd;
+	HDC			m_hdc;					// 화면 DC
+	HDC			m_hMemDC;			// 백버퍼 DC
+	HBITMAP	m_hBackBitmap;
+	HBITMAP	m_hOldBitmap;
+	RECT			m_clientRect;
 
 public:
 	Renderer(HWND hwnd);
@@ -40,6 +40,12 @@ public:
 		int x1, int y1,
 		int x2, int y2,
 		COLORREF color
+	);
+	void DrawString(
+		int x, int y,
+		const wchar_t* text,
+		COLORREF color = RGB(255, 255, 255),
+		int fontSize = 20
 	);
 
 };
