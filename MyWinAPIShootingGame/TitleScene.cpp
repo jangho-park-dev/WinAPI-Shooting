@@ -27,7 +27,7 @@ TitleScene::~TitleScene()
 void TitleScene::Initialize()
 {
 	ResourceManager::GetInstance().RPlaySound(SoundID::SOUND_TITLE_BGM, 0.05f, true);
-	m_background = new Background(SpriteID::SPRITE_TITLEBACKGROUND);
+	m_background = new Background(0.f, 0.f, SpriteID::SPRITE_TITLEBACKGROUND);
 	m_buttonStart = new Button(SpriteID::SPRITE_BTN_START, BTN_START_X, BTN_Y, BTN_W, BTN_H);
 	m_buttonExit = new Button(SpriteID::SPRITE_BTN_EXIT, BTN_EXIT_X, BTN_Y, BTN_W, BTN_H);
 }

@@ -29,6 +29,8 @@ private:
 
 	bool m_bGameOver;
 
+	float m_fFps;
+
 public:
 	GameWorld(SceneManager* sceneManager = nullptr);
 	~GameWorld();
@@ -47,6 +49,7 @@ public:
 	void HandleFire(float deltaTime);
 	void UpdateWave(float deltaTime);
 	void CheckWaveCleared();
+	void CheckRenderFPS(float deltaTime);
 
 	bool KeyDown(int keyCode);
 	bool KeyUp(int keyCode);

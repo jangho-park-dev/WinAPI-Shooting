@@ -13,6 +13,7 @@ GameWorld::GameWorld(SceneManager* sceneManager)
 	, m_nEnemyKilled(0)
 	, m_fSurvivalTime(0.f)
 	, m_bGameOver(false)
+	, m_fFps(0.f)
 {
 
 }
@@ -27,7 +28,8 @@ GameWorld::~GameWorld()
 void GameWorld::Initialize()
 {
 	m_player = new Player(this);
-	m_objects.push_back(new Background(SpriteID::SPRITE_GAMEBACKGROUND));
+	m_objects.push_back(new Background(0.f, 0.f, SpriteID::SPRITE_GAMEBACKGROUND));
+	m_objects.push_back(new Background(0.f, -640.f, SpriteID::SPRITE_GAMEBACKGROUND));
 	m_objects.push_back(m_player);
 
 	m_waves = WaveLoader::GetWaves();
@@ -54,6 +56,7 @@ void GameWorld::Update(RECT& client, float deltaTime)
 	RemoveInactiveObjects();
 	ProcessSpawnQueue();
 	CheckWaveCleared();
+	CheckRenderFPS(deltaTime);
 }
 
 void GameWorld::Render(Renderer& renderer)
@@ -65,6 +68,11 @@ void GameWorld::Render(Renderer& renderer)
 		if (obj->IsActive())
 			obj->Render(renderer);
 	}
+
+	wchar_t buf[64];
+	int nFps = static_cast<int>(m_fFps);
+	swprintf_s(buf, L"FPS : %d", nFps);
+	renderer.DrawString(380, 10, buf);
 }
 
 void GameWorld::CheckCollisions()
@@ -108,6 +116,17 @@ void GameWorld::CheckCollisions()
 				beta->OnCollision(*alpha);
 			}
 		}
+	}
+}
+
+void GameWorld::CheckRenderFPS(float deltaTime)
+{
+	static float countTime = 0.5f;
+	countTime -= deltaTime;
+	if (countTime <= 0.f)
+	{
+		m_fFps = deltaTime > 0.f ? 1.f / deltaTime : 0.f;
+		countTime = 0.5f;
 	}
 }
 

@@ -34,7 +34,7 @@ void GameOverScene::Initialize()
 {
 	ResourceManager::GetInstance().RPlaySound(SoundID::SOUND_GAMEOVER_BGM, 0.05f, true);
 
-	m_background = new Background(SpriteID::SPRITE_GAMEOVERBACKGROUND);
+	m_background = new Background(0.f, 0.f, SpriteID::SPRITE_GAMEOVERBACKGROUND);
 	m_buttonHome = new Button(SpriteID::SPRITE_BTN_HOME, BTN_HOME_X, BTN_Y, BTN_W, BTN_H);
 	m_buttonRestart = new Button(SpriteID::SPRITE_BTN_RESTART, BTN_REST_X, BTN_Y, BTN_W, BTN_H);
 }

@@ -3,15 +3,6 @@
 
 class Timer
 {
-public:
-	Timer();
-
-	void Initialize();
-	void Tick();
-
-	float GetDeltaTime() const;
-	float GetFPS() const;
-
 private:
 	LARGE_INTEGER m_llFrequency;
 	LARGE_INTEGER m_llPrevTime;
@@ -19,5 +10,20 @@ private:
 
 	float m_fDeltaTime;
 	float m_fFps;
+
+public:
+	static Timer& GetInstance()
+	{
+		static Timer instance;
+		return instance;
+	}
+
+	Timer();
+
+	void Initialize();
+	void Tick();
+
+	float GetDeltaTime() const;
+	float GetFPS() const;
 };
 
