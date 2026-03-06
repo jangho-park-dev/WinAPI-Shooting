@@ -1,6 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include "WaveLoader.h"	
+#include "SceneManager.h"
 #include <queue>
 
 class Renderer;
@@ -19,8 +20,10 @@ private:
 	int m_nCurrentWave;
 	float m_fWaveTimer;
 
+	SceneManager* m_sceneManager;
+
 public:
-	GameWorld();
+	GameWorld(SceneManager* sceneManager = nullptr);
 	~GameWorld();
 
 	void Initialize();

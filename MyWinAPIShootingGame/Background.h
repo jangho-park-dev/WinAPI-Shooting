@@ -11,9 +11,9 @@ private:
 	Sprite* m_backgroundSprite;
 
 public:
-	Background()
+	Background(SpriteID spriteID = SpriteID::SPRITE_TITLEBACKGROUND)
 	{
-		m_backgroundSprite = ResourceManager::GetInstance().GetSprite(SpriteID::SPRITE_BACKGROUND);
+		m_backgroundSprite = ResourceManager::GetInstance().GetSprite(spriteID);
 		SetType(GameObjectType::BACKGROUND);
 		SetLayer(GameObjectLayer::BACKGROUND_LAYER);
 		SetActive(true);

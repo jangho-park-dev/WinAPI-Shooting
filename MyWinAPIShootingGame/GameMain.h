@@ -7,6 +7,8 @@
 #include "ResourceManager.h"
 #include "GameWorld.h"
 #include "Player.h"
+#include "SceneManager.h"
+#include "TitleScene.h"
 
 class GameMain
 {
@@ -16,8 +18,7 @@ private:
 
 	Timer m_timer;
 	Renderer* m_renderer;
-	ResourceManager* m_resourceManager;
-	GameWorld* m_world;
+	SceneManager m_sceneManager;
 
 	bool m_isRunning;
 

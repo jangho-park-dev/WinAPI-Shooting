@@ -2,20 +2,16 @@
 
 
 GameMain::GameMain(HINSTANCE hInstance)
-	: m_hInstance(hInstance),
-	m_hWnd(nullptr),
-	m_renderer(nullptr),
-	m_resourceManager(nullptr),
-	m_world(nullptr),
-	m_isRunning(true)
+	: m_hInstance(hInstance)
+	, m_hWnd(nullptr)
+	, m_renderer(nullptr)
+	, m_isRunning(true)
 {
 }
 
 GameMain::~GameMain()
 {
-	delete m_world;
 	delete m_renderer;
-	delete m_resourceManager;
 }
 
 bool GameMain::Initialize(int nCmdShow)
@@ -64,12 +60,9 @@ bool GameMain::Initialize(int nCmdShow)
 	UpdateWindow(m_hWnd);
 
 	m_timer.Initialize();
-
 	m_renderer = new Renderer(m_hWnd);
-	m_resourceManager = new ResourceManager();
-	m_world = new GameWorld();
 
-	m_world->Initialize();
+	m_sceneManager.ChangeScene(new TitleScene(&m_sceneManager, m_hWnd));
 
 	return true;
 }
@@ -90,8 +83,8 @@ void GameMain::Run()
 		HandleInput(deltaTime);
 
 		m_renderer->BeginRender();
-		m_world->Update(client, deltaTime);
-		m_world->Render(*m_renderer);
+		m_sceneManager.Update(client, deltaTime);
+		m_sceneManager.Render(*m_renderer);
 		m_renderer->EndRender();
 	}
 }
@@ -113,7 +106,7 @@ bool GameMain::HandleMessage()
 
 void GameMain::HandleInput(float deltaTime)
 {
-	m_world->HandleInput(deltaTime);
+	m_sceneManager.HandleInput(deltaTime);
 }
 
 LRESULT CALLBACK GameMain::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)

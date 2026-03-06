@@ -4,13 +4,13 @@
 #include "Collider.h"
 #include "Background.h"
 
-GameWorld::GameWorld()
+GameWorld::GameWorld(SceneManager* sceneManager)
 	: m_player(nullptr)
+	, m_nCurrentWave(0)
+	, m_fWaveTimer(0.f)
+	, m_sceneManager(sceneManager)
 {
-	m_nCurrentWave = 0;
-	m_fWaveTimer = 0.f;
-
-	ResourceManager::GetInstance().RPlaySound(SoundID::SOUND_BGM, 0.03f, true);
+	//ResourceManager::GetInstance().RPlaySound(SoundID::SOUND_BGM, 0.03f, true);
 }
 
 GameWorld::~GameWorld()
@@ -23,7 +23,7 @@ GameWorld::~GameWorld()
 void GameWorld::Initialize()
 {
 	m_player = new Player(this);
-	m_objects.push_back(new Background());
+	m_objects.push_back(new Background(SpriteID::SPRITE_GAMEBACKGROUND));
 	m_objects.push_back(m_player);
 
 	m_waves = WaveLoader::GetWaves();
@@ -47,7 +47,6 @@ void GameWorld::Update(RECT& client, float deltaTime)
 	CheckCollisions();
 	RemoveInactiveObjects();
 	ProcessSpawnQueue();
-
 	CheckWaveCleared();
 }
 
